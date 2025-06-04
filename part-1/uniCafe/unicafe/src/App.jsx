@@ -38,7 +38,9 @@ const App = () => {
       <button onClick={handleGood}>good</button>
       <button onClick={() => setNeutral((prev) => prev + 1)}>neutral</button>
       <button onClick={() => setBad((prev) => prev + 1)}>bad</button>
-      <Statistics good={good} neutral={neutral} bad={bad} total={total} />
+      {total ? (
+        <Statistics good={good} neutral={neutral} bad={bad} total={total} />
+      ) : null}
     </>
   );
 };
