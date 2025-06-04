@@ -5,13 +5,24 @@ const Statistics = ({ good, neutral, bad, total }) => {
     <>
       {total && (
         <>
-          <h1>Statistics</h1>
-          <StatisticsLine text="good" value={good} />
-          <StatisticsLine text="neutral" value={neutral} />
-          <StatisticsLine text="bad" value={bad} />
-          <StatisticsLine text="all" value={total} />
-          <StatisticsLine text="average" value={(good - bad) / total} />
-          <StatisticsLine text="positive" value={`${(good / total) * 100}%`} />
+          <table>
+            <thead>
+              <tr>
+                <th>Statistics</th>
+              </tr>
+            </thead>
+            <tbody>
+              <StatisticsLine text="good" value={good} />
+              <StatisticsLine text="neutral" value={neutral} />
+              <StatisticsLine text="bad" value={bad} />
+              <StatisticsLine text="all" value={total} />
+              <StatisticsLine text="average" value={(good - bad) / total} />
+              <StatisticsLine
+                text="positive"
+                value={`${(good / total) * 100}%`}
+              />
+            </tbody>
+          </table>
         </>
       )}
     </>
@@ -19,9 +30,10 @@ const Statistics = ({ good, neutral, bad, total }) => {
 };
 const StatisticsLine = ({ text, value }) => {
   return (
-    <div>
-      {text}:{value}
-    </div>
+    <tr>
+      <td>{text}</td>
+      <td>{value}</td>
+    </tr>
   );
 };
 
