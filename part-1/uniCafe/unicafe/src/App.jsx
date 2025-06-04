@@ -3,13 +3,32 @@ import { useEffect, useState } from "react";
 const Statistics = ({ good, neutral, bad, total }) => {
   return (
     <>
-      <h1>Statistics</h1>
-      <div>good:{good}</div>
-      <div>neutral:{neutral}</div>
-      <div>bad:{bad}</div>
-      <div>all:{total}</div>
-      <div>average:{(good - bad) / total}</div>
-      <div>positive:{(good / total) * 100}%</div>
+      {total && (
+        <>
+          <h1>Statistics</h1>
+          <StatisticsLine text="good" value={good} />
+          <StatisticsLine text="neutral" value={neutral} />
+          <StatisticsLine text="bad" value={bad} />
+          <StatisticsLine text="all" value={total} />
+          <StatisticsLine text="average" value={(good - bad) / total} />
+          <StatisticsLine text="positive" value={`${(good / total) * 100}%`} />
+        </>
+      )}
+    </>
+  );
+};
+const StatisticsLine = ({ text, value }) => {
+  return (
+    <div>
+      {text}:{value}
+    </div>
+  );
+};
+
+const Button = ({ onClick, name }) => {
+  return (
+    <>
+      <button onClick={onClick}>{name}</button>
     </>
   );
 };
@@ -22,7 +41,6 @@ const App = () => {
   const [neutral, setNeutral] = useState(0);
   const [bad, setBad] = useState(0);
   const [total, setTotal] = useState(0);
-
   useEffect(() => {
     setTotal(good + neutral + bad);
   }, [good, bad, neutral]);
@@ -34,13 +52,11 @@ const App = () => {
   return (
     <>
       <h1>Give Feedback</h1>
+      <Button name="good" onClick={handleGood} />
+      <Button name="neutral" onClick={() => setNeutral((prev) => prev + 1)} />
+      <Button name="bad" onClick={() => setBad((prev) => prev + 1)} />
 
-      <button onClick={handleGood}>good</button>
-      <button onClick={() => setNeutral((prev) => prev + 1)}>neutral</button>
-      <button onClick={() => setBad((prev) => prev + 1)}>bad</button>
-      {total ? (
-        <Statistics good={good} neutral={neutral} bad={bad} total={total} />
-      ) : null}
+      <Statistics good={good} neutral={neutral} bad={bad} total={total} />
     </>
   );
 };
