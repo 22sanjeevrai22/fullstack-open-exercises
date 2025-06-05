@@ -5,6 +5,74 @@ interface Person {
   number?: string;
 }
 
+interface InputProps {
+  handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+  newName: string;
+  handleNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  newNumber: string;
+  handleNumberChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}
+interface SearchProps {
+  handleSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}
+
+const Search = ({ handleSearchChange }: SearchProps) => {
+  return (
+    <>
+      <h3>Search</h3>
+      <input placeholder="Search" type="text" onChange={handleSearchChange} />
+    </>
+  );
+};
+
+const DisplayNumbers = ({ filteredPersons }: { filteredPersons: Person[] }) => {
+  return (
+    <>
+      <h3>Numbers</h3>
+      {filteredPersons.map((person: Person) => (
+        <div key={person.name}>
+          {person?.name}
+          <span>{person?.number}</span>
+        </div>
+      ))}
+    </>
+  );
+};
+
+const Input = ({
+  handleSubmit,
+  newName,
+  handleNameChange,
+  newNumber,
+  handleNumberChange,
+}: InputProps) => {
+  return (
+    <>
+      <h3>Input</h3>
+      <form onSubmit={handleSubmit}>
+        <div>
+          Name:{" "}
+          <input
+            placeholder="Input Name"
+            value={newName}
+            onChange={handleNameChange}
+          />
+        </div>
+        <div>
+          Number:{" "}
+          <input
+            placeholder="Input Number"
+            value={newNumber}
+            onChange={handleNumberChange}
+          />
+        </div>
+        <div>
+          <button type="submit">Add</button>
+        </div>
+      </form>
+    </>
+  );
+};
 const App = () => {
   const [persons, setPersons] = useState<Person[]>([
     { name: "Arto Hellas", number: "040-123456", id: 1 },
@@ -16,7 +84,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState("");
   const [search, setSearch] = useState("");
 
-  const filteredPersons = persons.filter((person) =>
+  const filteredPersons: Person[] = persons.filter((person) =>
     person.name.toLowerCase().includes(search.toLowerCase())
   );
 
@@ -61,40 +129,18 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <h3>Search</h3>
-      <input placeholder="Search" type="text" onChange={handleSearchChange} />
+      <Search handleSearchChange={handleSearchChange} />
       <br />
       <br />
-      <h3>Input</h3>
-      <form onSubmit={handleSubmit}>
-        <div>
-          Name:{" "}
-          <input
-            placeholder="Input Name"
-            value={newName}
-            onChange={handleNameChange}
-          />
-        </div>
-        <div>
-          Number:{" "}
-          <input
-            placeholder="Input Number"
-            value={newNumber}
-            onChange={handleNumberChange}
-          />
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
-      {}
-      <h3>Numbers</h3>
-      {filteredPersons.map((person) => (
-        <div key={person.name}>
-          {person?.name}
-          <span>{person?.number}</span>
-        </div>
-      ))}
+      <Input
+        handleSubmit={handleSubmit}
+        newName={newName}
+        newNumber={newNumber}
+        handleNameChange={handleNameChange}
+        handleNumberChange={handleNumberChange}
+      />
+
+      <DisplayNumbers filteredPersons={filteredPersons} />
     </div>
   );
 };
