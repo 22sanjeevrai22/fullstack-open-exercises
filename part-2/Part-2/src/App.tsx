@@ -55,6 +55,7 @@ const Course = ({ course, parts }: CourseProps) => {
     <>
       <Header course={course} />
       <Content parts={parts} />
+      {/* Included the total too */}
       <Total parts={parts} />
     </>
   );
@@ -83,6 +84,7 @@ const Content = ({ parts }: ContentProps) => {
   );
 };
 
+//Included the Total Too
 const Total = ({ parts }: TotalProps) => {
   const total = parts.reduce((acc, currentValue) => {
     return currentValue.exercises + acc;
