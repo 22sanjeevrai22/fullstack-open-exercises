@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 const App = () => {
   const anecdotes = [
@@ -12,9 +12,13 @@ const App = () => {
     "The only way to go fast, is to go well.",
   ];
   const voteObject = { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0 };
-  const copyVotes = { ...voteObject };
-  const [vote, setVote] = useState(copyVotes);
+
+  const [vote, setVote] = useState(voteObject);
   const [selected, setSelected] = useState(0);
+
+  const mostVotedIndex = Object.keys(vote).reduce((a, b) =>
+    vote[a] > vote[b] ? a : b
+  );
 
   const handleClick = () => {
     let randomNumber = Math.floor(Math.random() * anecdotes.length);
@@ -24,6 +28,10 @@ const App = () => {
   const handleVote = (selected) => {
     setVote((prev) => ({ ...prev, [selected]: prev[selected] + 1 }));
   };
+  useEffect(() => {
+    console.log("votee", vote);
+    console.log("voteeObject", voteObject);
+  }, [vote, voteObject]);
 
   return (
     <>
@@ -33,6 +41,11 @@ const App = () => {
       <button onClick={handleClick}>Next</button>
       <button onClick={() => handleVote(selected)}>Vote</button>
       <h3>Vote:{vote[selected]}</h3>
+      <hr />
+      <hr />
+      <h2>Top voted quote</h2>
+      <div>{anecdotes[mostVotedIndex]}</div>
+      <div>{vote[mostVotedIndex]}</div>
     </>
   );
 };
