@@ -85,6 +85,7 @@ const Content = ({ parts }: ContentProps) => {
 };
 
 //Included the Total Too
+//Included reduce method too
 const Total = ({ parts }: TotalProps) => {
   const total = parts.reduce((acc, currentValue) => {
     return currentValue.exercises + acc;
