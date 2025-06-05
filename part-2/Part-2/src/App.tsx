@@ -1,15 +1,21 @@
 interface Part {
   name: string;
   exercises: number;
+  id: number;
 }
 
-interface CourseProps {
-  course: string;
+interface Course {
+  id: number;
+  name: string;
   parts: Part[];
 }
 
+interface CourseProps {
+  course: Course;
+}
+
 interface HeaderProps {
-  course: string;
+  course: Course;
 }
 
 interface ContentProps {
@@ -26,43 +32,48 @@ interface TotalProps {
 }
 
 const App = () => {
-  const course: string = "Half Stack application development";
-
-  const parts: Part[] = [
-    {
-      name: "Fundamentals of React",
-      exercises: 10,
-    },
-    {
-      name: "Using props to pass data",
-      exercises: 7,
-    },
-    {
-      name: "State of a component",
-      exercises: 14,
-    },
-  ];
+  const course = {
+    id: 1,
+    name: "Half Stack application development",
+    parts: [
+      {
+        name: "Fundamentals of React",
+        exercises: 10,
+        id: 1,
+      },
+      {
+        name: "Using props to pass data",
+        exercises: 7,
+        id: 2,
+      },
+      {
+        name: "State of a component",
+        exercises: 14,
+        id: 3,
+      },
+    ],
+  };
 
   return (
     <div>
-      <Course course={course} parts={parts} />
+      <Course course={course} />
     </div>
   );
 };
 
-const Course = ({ course, parts }: CourseProps) => {
+const Course = ({ course }: CourseProps) => {
   return (
     <>
       <Header course={course} />
-      <Content parts={parts} />
+      <Content parts={course.parts} />
       {/* Included the total too */}
-      <Total parts={parts} />
+      <Total parts={course.parts} />
     </>
   );
 };
 
 const Header = ({ course }: HeaderProps) => {
-  return <h1>{course}</h1>;
+  return <h1>{course.name}</h1>;
 };
 
 const Part = ({ name, exercises }: PartProps) => {
@@ -77,8 +88,8 @@ const Part = ({ name, exercises }: PartProps) => {
 const Content = ({ parts }: ContentProps) => {
   return (
     <>
-      {parts.map((part, index) => (
-        <Part key={index} name={part.name} exercises={part.exercises} />
+      {parts.map((part) => (
+        <Part key={part.id} name={part.name} exercises={part.exercises} />
       ))}
     </>
   );
