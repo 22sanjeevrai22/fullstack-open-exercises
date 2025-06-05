@@ -1,110 +1,50 @@
-interface Part {
+import { useState } from "react";
+interface Person {
   name: string;
-  exercises: number;
-  id: number;
-}
-
-interface Course {
-  id: number;
-  name: string;
-  parts: Part[];
-}
-
-interface CourseProps {
-  course: Course;
-}
-
-interface HeaderProps {
-  course: Course;
-}
-
-interface ContentProps {
-  parts: Part[];
-}
-
-interface PartProps {
-  name: string;
-  exercises: number;
-}
-
-interface TotalProps {
-  parts: Part[];
 }
 
 const App = () => {
-  const course = {
-    id: 1,
-    name: "Half Stack application development",
-    parts: [
-      {
-        name: "Fundamentals of React",
-        exercises: 10,
-        id: 1,
-      },
-      {
-        name: "Using props to pass data",
-        exercises: 7,
-        id: 2,
-      },
-      {
-        name: "State of a component",
-        exercises: 14,
-        id: 3,
-      },
-    ],
+  const [persons, setPersons] = useState<Person[]>([{ name: "Arto Hellas" }]);
+  const [newName, setNewName] = useState("");
+
+  const checkDuplicate = () => {
+    return persons.some(
+      (person) => person.name.toLowerCase() === newName.toLowerCase()
+    );
   };
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    setNewName(e.target.value);
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (newName.trim() === "") return;
+    if (checkDuplicate()) {
+      alert(`${newName} is already added to phonebook`);
+    } else {
+      setPersons((prev) => [...prev, { name: newName }]);
+    }
+    setNewName("");
+  };
+
+  console.log("newname", newName);
   return (
     <div>
-      <Course course={course} />
-    </div>
-  );
-};
-
-const Course = ({ course }: CourseProps) => {
-  return (
-    <>
-      <Header course={course} />
-      <Content parts={course.parts} />
-      {/* Included the total too */}
-      <Total parts={course.parts} />
-    </>
-  );
-};
-
-const Header = ({ course }: HeaderProps) => {
-  return <h1>{course.name}</h1>;
-};
-
-const Part = ({ name, exercises }: PartProps) => {
-  return (
-    <div>
-      <p>{name}</p>
-      <p>{exercises}</p>
-    </div>
-  );
-};
-
-const Content = ({ parts }: ContentProps) => {
-  return (
-    <>
-      {parts.map((part) => (
-        <Part key={part.id} name={part.name} exercises={part.exercises} />
+      <h2>Phonebook</h2>
+      <form onSubmit={handleSubmit}>
+        <div>
+          <input value={newName} onChange={handleChange} />
+        </div>
+        <div>
+          <button type="submit">add</button>
+        </div>
+      </form>
+      <h2>Numbers</h2>
+      {persons.map((person) => (
+        <div key={person.name}>{person?.name}</div>
       ))}
-    </>
-  );
-};
-
-//Included the Total Too
-//Included reduce method too
-const Total = ({ parts }: TotalProps) => {
-  const total = parts.reduce((acc, currentValue) => {
-    return currentValue.exercises + acc;
-  }, 0);
-  return (
-    <>
-      <span>Total:{total}</span>
-    </>
+    </div>
   );
 };
 
