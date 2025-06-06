@@ -1,4 +1,5 @@
-import { useState } from "react";
+import axios from "axios";
+import { useEffect, useState } from "react";
 interface Person {
   id: number;
   name: string;
@@ -31,8 +32,7 @@ const DisplayNumbers = ({ filteredPersons }: { filteredPersons: Person[] }) => {
       <h3>Numbers</h3>
       {filteredPersons.map((person: Person) => (
         <div key={person.name}>
-          {person?.name}
-          <span>{person?.number}</span>
+          {person?.name}:<span>{person?.number}</span>
         </div>
       ))}
     </>
@@ -84,6 +84,14 @@ const App = () => {
   const [newNumber, setNewNumber] = useState("");
   const [search, setSearch] = useState("");
 
+  useEffect(() => {
+    axios.get("http://localhost:3001/persons").then((res) => {
+      const data = res.data;
+      console.log("dataaa", data);
+      setPersons(data);
+    });
+  }, []);
+
   const filteredPersons: Person[] = persons.filter((person) =>
     person.name.toLowerCase().includes(search.toLowerCase())
   );
@@ -125,7 +133,6 @@ const App = () => {
     setNewNumber("");
   };
 
-  console.log("newname", newName);
   return (
     <div>
       <h2>Phonebook</h2>
