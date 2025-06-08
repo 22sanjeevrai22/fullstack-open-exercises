@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getAll, create } from "./personService";
+import { getAll, create, remove, update } from "./personService";
 interface Person {
   id: number;
   name: string;
@@ -15,6 +15,11 @@ interface SearchProps {
   handleSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
+interface DisplayNumberProps {
+  filteredPersons: Person[];
+  handleRemove: (id: number) => void;
+}
+
 const Search = ({ handleSearchChange }: SearchProps) => {
   return (
     <>
@@ -24,13 +29,38 @@ const Search = ({ handleSearchChange }: SearchProps) => {
   );
 };
 
-const DisplayNumbers = ({ filteredPersons }: { filteredPersons: Person[] }) => {
+const DisplayNumbers = ({
+  filteredPersons,
+  handleRemove,
+}: DisplayNumberProps) => {
   return (
     <>
       <h3>Numbers</h3>
       {filteredPersons.map((person: Person) => (
-        <div key={person.id}>
-          {person?.name}:<span>{person?.number}</span>
+        <div
+          key={person.id}
+          style={{
+            backgroundColor: "#A9A9A9",
+            padding: "4px",
+            margin: "2px",
+            width: "50%",
+            display: "flex",
+            alignItems: "center", // Add this
+            justifyContent: "space-between",
+          }}
+        >
+          {person?.name}:{person?.number}
+          <button
+            style={{
+              display: "",
+              background: "red",
+              margin: "3px",
+              textAlign: "right",
+            }}
+            onClick={() => handleRemove(person.id)}
+          >
+            Delete
+          </button>
         </div>
       ))}
     </>
@@ -97,8 +127,8 @@ const App = () => {
     person.name.toLowerCase().includes(search.toLowerCase())
   );
 
-  const checkDuplicate = () => {
-    return persons.some(
+  const checkAlreadyExisted = () => {
+    return persons.find(
       (person) => person.name.toLowerCase() === formData.name.toLowerCase()
     );
   };
@@ -117,8 +147,31 @@ const App = () => {
       alert("Name cannot be empty.");
       return;
     }
-    if (checkDuplicate()) {
-      alert(`${formData.name} is already added to phonebook`);
+
+    const existingPerson = checkAlreadyExisted();
+
+    if (existingPerson) {
+      const confirmUpdate = window.confirm(
+        `${formData.name} is already in the phonebook. Replace the old number with the new one?`
+      );
+      if (confirmUpdate) {
+        const updatedPerson = {
+          ...existingPerson,
+          number: formData.number,
+        };
+        update(updatedPerson, existingPerson.id).then((res) => {
+          setPersons((prev: Person[]) =>
+            prev.map((person) => {
+              if (person.id === existingPerson.id) {
+                ////??????????
+                return res.data;
+              } else {
+                return person;
+              }
+            })
+          );
+        });
+      }
     } else {
       create(formData).then((res: { data: Person }) => {
         setPersons((prev: Person[]) => [...prev, res.data]);
@@ -128,6 +181,14 @@ const App = () => {
       name: "",
       number: "",
     });
+  };
+
+  const handleRemove = (inputId: number) => {
+    if (confirm("Are you sure you want to remove?")) {
+      remove(inputId).then(() => {
+        setPersons((prev) => prev.filter((person) => person.id !== inputId));
+      });
+    }
   };
 
   return (
@@ -143,7 +204,10 @@ const App = () => {
         handleChange={handleChange}
       />
 
-      <DisplayNumbers filteredPersons={filteredPersons} />
+      <DisplayNumbers
+        filteredPersons={filteredPersons}
+        handleRemove={handleRemove}
+      />
     </div>
   );
 };
