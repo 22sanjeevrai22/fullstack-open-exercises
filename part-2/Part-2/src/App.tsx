@@ -1,11 +1,10 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
+import { getAll, create } from "./personService";
 interface Person {
   id: number;
   name: string;
   number?: string;
 }
-
 interface InputProps {
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   newName: string;
@@ -87,8 +86,8 @@ const App = () => {
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    axios.get("http://localhost:3001/notes").then((res) => {
-      const data = res.data;
+    getAll().then((res: { data: Person[] }) => {
+      const data: Person[] = res.data;
       console.log("dataaa", data);
       setPersons(data);
     });
@@ -121,9 +120,8 @@ const App = () => {
     if (checkDuplicate()) {
       alert(`${formData.name} is already added to phonebook`);
     } else {
-      const sentData = axios.post("http://localhost:3001/notes", formData);
-      sentData.then((res) => {
-        setPersons((prev) => [...prev, res.data]);
+      create(formData).then((res: { data: Person }) => {
+        setPersons((prev: Person[]) => [...prev, res.data]);
       });
     }
     setFormData({
