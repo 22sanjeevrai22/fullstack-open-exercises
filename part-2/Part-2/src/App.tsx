@@ -9,9 +9,8 @@ interface Person {
 interface InputProps {
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   newName: string;
-  handleNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   newNumber: string;
-  handleNumberChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 interface SearchProps {
   handleSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -31,7 +30,7 @@ const DisplayNumbers = ({ filteredPersons }: { filteredPersons: Person[] }) => {
     <>
       <h3>Numbers</h3>
       {filteredPersons.map((person: Person) => (
-        <div key={person.name}>
+        <div key={person.id}>
           {person?.name}:<span>{person?.number}</span>
         </div>
       ))}
@@ -42,9 +41,8 @@ const DisplayNumbers = ({ filteredPersons }: { filteredPersons: Person[] }) => {
 const Input = ({
   handleSubmit,
   newName,
-  handleNameChange,
+  handleChange,
   newNumber,
-  handleNumberChange,
 }: InputProps) => {
   return (
     <>
@@ -55,15 +53,17 @@ const Input = ({
           <input
             placeholder="Input Name"
             value={newName}
-            onChange={handleNameChange}
+            name="name"
+            onChange={handleChange}
           />
         </div>
         <div>
           Number:{" "}
           <input
             placeholder="Input Number"
+            name="number"
             value={newNumber}
-            onChange={handleNumberChange}
+            onChange={handleChange}
           />
         </div>
         <div>
@@ -80,12 +80,14 @@ const App = () => {
     { name: "Dan Abramov", number: "12-43-234345", id: 3 },
     { name: "Mary Poppendieck", number: "39-23-6423122", id: 4 },
   ]);
-  const [newName, setNewName] = useState("");
-  const [newNumber, setNewNumber] = useState("");
+  const [formData, setFormData] = useState<{ name: string; number: string }>({
+    name: "",
+    number: "",
+  });
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    axios.get("http://localhost:3001/persons").then((res) => {
+    axios.get("http://localhost:3001/notes").then((res) => {
       const data = res.data;
       console.log("dataaa", data);
       setPersons(data);
@@ -98,16 +100,12 @@ const App = () => {
 
   const checkDuplicate = () => {
     return persons.some(
-      (person) => person.name.toLowerCase() === newName.toLowerCase()
+      (person) => person.name.toLowerCase() === formData.name.toLowerCase()
     );
   };
 
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    setNewName(e.target.value);
-  };
-
-  const handleNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewNumber(e.target.value);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -116,21 +114,22 @@ const App = () => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (newName.trim() === "") return;
-    if (checkDuplicate()) {
-      alert(`${newName} is already added to phonebook`);
-    } else {
-      setPersons((prev) => [
-        ...prev,
-        {
-          name: newName,
-          number: newNumber,
-          id: prev.length > 0 ? Math.max(...prev.map((p) => p.id)) + 1 : 1,
-        },
-      ]);
+    if (formData.name.trim() === "") {
+      alert("Name cannot be empty.");
+      return;
     }
-    setNewName("");
-    setNewNumber("");
+    if (checkDuplicate()) {
+      alert(`${formData.name} is already added to phonebook`);
+    } else {
+      const sentData = axios.post("http://localhost:3001/notes", formData);
+      sentData.then((res) => {
+        setPersons((prev) => [...prev, res.data]);
+      });
+    }
+    setFormData({
+      name: "",
+      number: "",
+    });
   };
 
   return (
@@ -141,10 +140,9 @@ const App = () => {
       <br />
       <Input
         handleSubmit={handleSubmit}
-        newName={newName}
-        newNumber={newNumber}
-        handleNameChange={handleNameChange}
-        handleNumberChange={handleNumberChange}
+        newName={formData.name}
+        newNumber={formData.number}
+        handleChange={handleChange}
       />
 
       <DisplayNumbers filteredPersons={filteredPersons} />
