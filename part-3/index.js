@@ -27,6 +27,10 @@ let notes = [
   },
 ];
 
+app.head("/api/notes", (req, res) => {
+  res.status(200).end();
+});
+
 app.get("/api/notes", (req, res) => {
   res.json(notes);
 });
