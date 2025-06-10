@@ -1,8 +1,17 @@
-console.log("Hello world");
+var morgan = require("morgan");
 
 const express = require("express");
 const app = express();
 app.use(express.json());
+
+morgan.token("body", (req) => {
+  return req.method === "POST" ? JSON.stringify(req.body) : "";
+});
+
+// Logging middleware with custom format
+app.use(
+  morgan(":method :url :status :res[content-length] - :response-time ms :body")
+);
 
 let notes = [
   {
@@ -35,14 +44,14 @@ app.get("/api/notes", (req, res) => {
   res.json(notes);
 });
 
-app.get("/api/notes/info", (req, res) => {
+app.get("/api/info", (req, res) => {
   res.send(`Phonebook has info for ${notes.length} people.`);
 });
 
 app.post("/api/notes/create", (req, res) => {
   const data = req.body;
 
-  const doesExist = notes.some((note) => note.id === Number(data.id));
+  const doesExist = notes.some((note) => note.id === data.id);
   if (doesExist) {
     res.status(409).json({ message: `${data.id} already exist` });
   } else {
@@ -52,7 +61,7 @@ app.post("/api/notes/create", (req, res) => {
 });
 
 app.get("/api/notes/:id", (req, res) => {
-  const id = Number(req.params.id);
+  const id = req.params.id;
   const note = notes.find((note) => note.id === id);
   if (note) {
     res.status(200).json({ message: `Note of ${id} fetch successfuol`, note });
@@ -62,8 +71,8 @@ app.get("/api/notes/:id", (req, res) => {
 });
 
 app.delete("/api/notes/:id", (req, res) => {
-  const id = Number(req.params.id);
-  const doesExist = notes.some((note) => note.id === Number(id));
+  const id = req.params.id;
+  const doesExist = notes.some((note) => note.id === id);
   if (!doesExist) {
     res.status(404).json({ message: `Note with id:${id} doesn't exist` });
   } else {
