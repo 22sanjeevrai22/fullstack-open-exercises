@@ -1,5 +1,5 @@
 import axios from "axios";
-const baseUrl = "localhost:5173/api/notes";
+const baseUrl = "/api/notes";
 
 interface Note {
   id: number;
