@@ -1,8 +1,10 @@
-var morgan = require("morgan");
-
 const express = require("express");
+var morgan = require("morgan");
 const app = express();
 app.use(express.json());
+const cors = require("cors");
+app.use(cors());
+app.use(express.static("dist"));
 
 morgan.token("body", (req) => {
   return req.method === "POST" ? JSON.stringify(req.body) : "";
@@ -48,15 +50,20 @@ app.get("/api/info", (req, res) => {
   res.send(`Phonebook has info for ${notes.length} people.`);
 });
 
-app.post("/api/notes/create", (req, res) => {
+app.post("/api/notes", (req, res) => {
   const data = req.body;
 
-  const doesExist = notes.some((note) => note.id === data.id);
+  const doesExist = notes.some((note) => Number(note.id) === Number(data.id));
   if (doesExist) {
     res.status(409).json({ message: `${data.id} already exist` });
   } else {
-    notes.push(data);
-    res.status(200).json({ message: "Created" });
+    // Generate a new unique id
+    const newId = (
+      Math.max(...notes.map((n) => Number(n.id)), 0) + 1
+    ).toString();
+    const newNote = { ...data, id: newId };
+    notes.push(newNote);
+    res.status(200).json({ message: "Created", note: newNote });
   }
 });
 
@@ -72,6 +79,7 @@ app.get("/api/notes/:id", (req, res) => {
 
 app.delete("/api/notes/:id", (req, res) => {
   const id = req.params.id;
+  console.log("idddd", id);
   const doesExist = notes.some((note) => note.id === id);
   if (!doesExist) {
     res.status(404).json({ message: `Note with id:${id} doesn't exist` });
@@ -81,7 +89,7 @@ app.delete("/api/notes/:id", (req, res) => {
   }
 });
 
-const PORT = 3002;
+const PORT = process.env.PORT ? process.env.PORT : 3002;
 app.listen(PORT);
 
 console.log("App running at port", PORT);
