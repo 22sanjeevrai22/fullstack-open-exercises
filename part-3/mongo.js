@@ -1,105 +1,81 @@
 const express = require("express");
-var morgan = require("morgan");
-const app = express();
+const morgan = require("morgan");
 const mongoose = require("mongoose");
+const cors = require("cors");
 
-// const password = "fullstackopen121";
-if (process.argv.length < 5) {
-  console.log("give password as argument");
-  process.exit(1);
-}
-const password = process.argv[2];
+const app = express();
 
-const url = `mongodb+srv://sunzeevraee:${password}@cluster0.4ury8bm.mongodb.net/phonebook?retryWrites=true&w=majority&appName=Cluster0`;
-
-mongoose.set("strictQuery", false);
-mongoose.connect(url);
-
+// Define schema and model
 const phonebookSchema = new mongoose.Schema({
   name: String,
   number: Number,
 });
-
 const PhoneBook = mongoose.model("PhoneBook", phonebookSchema);
 
-const PhoneBook1 = new PhoneBook({
-  name: process.argv[3],
-  number: process.argv[4],
-});
+// --- CLI mode ---
+if (require.main === module) {
+  if (process.argv.length < 3) {
+    console.log("give password as argument");
+    process.exit(1);
+  }
 
-PhoneBook1.save().then((result) => {
-  console.log("Phonebook saved!");
-  mongoose.connection.close();
-});
-app.use(express.json());
-const cors = require("cors");
-app.use(cors());
-app.use(express.static("dist"));
+  const password = process.argv[2];
+  const url = `mongodb+srv://sanjeev_rai101:${password}@sanveevcluster0.rpcts8f.mongodb.net/phonebook?retryWrites=true&w=majority&appName=SanveevCluster0`;
+  mongoose.set("strictQuery", false);
+  mongoose.connect(url).then(() => {
+    if (process.argv.length === 3) {
+      // List entries
+      PhoneBook.find({}).then((result) => {
+        console.log("phonebook:");
+        result.forEach((entry) => {
+          console.log(`${entry.name} ${entry.number}`);
+        });
+        mongoose.connection.close();
+      });
+    } else if (process.argv.length === 5) {
+      // Add entry
+      const name = process.argv[3];
+      const number = process.argv[4];
 
-morgan.token("body", (req) => {
-  return req.method === "POST" ? JSON.stringify(req.body) : "";
-});
+      const newEntry = new PhoneBook({ name, number });
+      newEntry.save().then(() => {
+        console.log(`added ${name} number ${number} to phonebook`);
+        mongoose.connection.close();
+      });
+    } else {
+      console.log("Invalid number of arguments.");
+      mongoose.connection.close();
+    }
+  });
+} else {
+  // --- Server mode ---
 
-// Logging middleware with custom format
-app.use(
-  morgan(":method :url :status :res[content-length] - :response-time ms :body")
-);
+  const url = process.env.MONGODB_URI;
+  if (!url) {
+    console.error("MONGODB_URI environment variable not set.");
+    process.exit(1);
+  }
 
-// app.head("/api/persons", (req, res) => {
-//   res.status(200).end();
-// });
+  mongoose.set("strictQuery", false);
+  mongoose.connect(url);
 
-// app.get("/api/persons", (req, res) => {
-//   Note.find({}).then((result) => {
-//     console.log("jjj", result);
-//     res.json(result);
-//   });
-// });
+  app.use(cors());
+  app.use(express.json());
+  app.use(express.static("dist"));
 
-// app.get("/api/info", (req, res) => {
-//   res.json(persons);
-// });
+  morgan.token("body", (req) =>
+    req.method === "POST" ? JSON.stringify(req.body) : ""
+  );
+  app.use(
+    morgan(
+      ":method :url :status :res[content-length] - :response-time ms :body"
+    )
+  );
 
-// app.post("/api/persons", (req, res) => {
-//   const data = req.body;
+  // Define your API routes here (e.g. GET, POST /api/persons)
 
-//   const doesExist = persons.some((note) => Number(note.id) === Number(data.id));
-//   if (doesExist) {
-//     res.status(409).json({ message: `${data.id} already exist` });
-//   } else {
-//     // Generate a new unique id
-//     const newId = (
-//       Math.max(...persons.map((n) => Number(n.id)), 0) + 1
-//     ).toString();
-//     const newNote = { ...data, id: newId };
-//     persons.push(newNote);
-//     res.status(200).json({ message: "Created", note: newNote });
-//   }
-// });
-
-// app.get("/api/persons/:id", (req, res) => {
-//   const id = req.params.id;
-//   const note = persons.find((note) => note.id === id);
-//   if (note) {
-//     res.status(200).json({ message: `Note of ${id} fetch successfuol`, note });
-//   } else {
-//     res.status(400).json({ message: "Very Sad" });
-//   }
-// });
-
-// app.delete("/api/persons/:id", (req, res) => {
-//   const id = req.params.id;
-//   console.log("idddd", id);
-//   const doesExist = persons.some((note) => note.id === id);
-//   if (!doesExist) {
-//     res.status(404).json({ message: `Note with id:${id} doesn't exist` });
-//   } else {
-//     persons = persons.filter((note) => note.id !== id);
-//     res.status(200).json({ message: "Successfully deleted" });
-//   }
-// });
-
-const PORT = process.env.PORT ? process.env.PORT : 3002;
-app.listen(PORT);
-
-console.log("App running at port", PORT);
+  const PORT = process.env.PORT || 3002;
+  app.listen(PORT, () => {
+    console.log("Server running on port", PORT);
+  });
+}
