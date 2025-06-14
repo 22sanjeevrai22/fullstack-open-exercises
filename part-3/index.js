@@ -1,6 +1,22 @@
 const express = require("express");
 var morgan = require("morgan");
 const app = express();
+const mongoose = require("mongoose");
+
+const password = "fullstackopen121";
+
+const url = `mongodb+srv://sunzeevraee:${password}@cluster0.4ury8bm.mongodb.net/Institute?retryWrites=true&w=majority&appName=Cluster0`;
+
+mongoose.set("strictQuery", false);
+mongoose.connect(url);
+
+const noteSchema = new mongoose.Schema({
+  name: String,
+  number: Number,
+});
+
+const Note = mongoose.model("Note", noteSchema);
+
 app.use(express.json());
 const cors = require("cors");
 app.use(cors());
@@ -15,39 +31,21 @@ app.use(
   morgan(":method :url :status :res[content-length] - :response-time ms :body")
 );
 
-let notes = [
-  {
-    id: "1",
-    name: "Arto Hellas",
-    number: "040-123456",
-  },
-  {
-    id: "2",
-    name: "Ada Lovelace",
-    number: "39-44-5323523",
-  },
-  {
-    id: "3",
-    name: "Dan Abramov",
-    number: "12-43-234345",
-  },
-  {
-    id: "4",
-    name: "Mary Poppendieck",
-    number: "39-23-6423122",
-  },
-];
+let notes = [];
 
 app.head("/api/notes", (req, res) => {
   res.status(200).end();
 });
 
 app.get("/api/notes", (req, res) => {
-  res.json(notes);
+  Note.find({}).then((result) => {
+    console.log("jjj", result);
+    res.json(result);
+  });
 });
 
 app.get("/api/info", (req, res) => {
-  res.send(`Phonebook has info for ${notes.length} people.`);
+  res.json(notes);
 });
 
 app.post("/api/notes", (req, res) => {

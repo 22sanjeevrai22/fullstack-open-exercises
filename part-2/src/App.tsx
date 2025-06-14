@@ -158,7 +158,6 @@ const App = () => {
           setNotes((prev: Note[]) =>
             prev.map((note) => {
               if (note.id === existingNote.id) {
-                ////??????????
                 return res.data;
               } else {
                 return note;
