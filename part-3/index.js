@@ -1,93 +1,114 @@
 const express = require("express");
-var morgan = require("morgan");
-const app = express();
+require("dotenv").config();
+const morgan = require("morgan");
 const mongoose = require("mongoose");
+const cors = require("cors");
 
-const password = "fullstackopen121";
+const app = express();
 
-const url = `mongodb+srv://sunzeevraee:${password}@cluster0.4ury8bm.mongodb.net/Institute?retryWrites=true&w=majority&appName=Cluster0`;
+// --- MongoDB Connection ---
+const password = process.env.MONGO_PW; // Change this to process.env or config for production
+const url = `mongodb+srv://sanjeev_rai101:${password}@sanveevcluster0.rpcts8f.mongodb.net/phonebook?retryWrites=true&w=majority&appName=SanveevCluster0`;
 
 mongoose.set("strictQuery", false);
-mongoose.connect(url);
+mongoose
+  .connect(url)
+  .then(() => console.log("Connected to MongoDB"))
+  .catch((error) => {
+    console.error("Error connecting to MongoDB:", error.message);
+  });
 
-const noteSchema = new mongoose.Schema({
+// --- Middleware ---
+app.use(express.json());
+app.use(cors());
+app.use(express.static("dist"));
+
+// --- Mongoose Schema & Model ---
+const phonebookSchema = new mongoose.Schema({
   name: String,
   number: Number,
 });
 
-const Note = mongoose.model("Note", noteSchema);
-
-app.use(express.json());
-const cors = require("cors");
-app.use(cors());
-app.use(express.static("dist"));
-
-morgan.token("body", (req) => {
-  return req.method === "POST" ? JSON.stringify(req.body) : "";
+phonebookSchema.set("toJSON", {
+  transform: (document, returnedObject) => {
+    returnedObject.id = returnedObject._id.toString();
+    delete returnedObject._id;
+    delete returnedObject.__v;
+  },
 });
 
-// Logging middleware with custom format
+const PhoneBook = mongoose.model("PhoneBook", phonebookSchema);
+
+// --- Morgan Logging ---
+morgan.token("body", (req) =>
+  req.method === "POST" ? JSON.stringify(req.body) : ""
+);
 app.use(
   morgan(":method :url :status :res[content-length] - :response-time ms :body")
 );
 
-let notes = [];
-
-app.head("/api/notes", (req, res) => {
-  res.status(200).end();
-});
-
-app.get("/api/notes", (req, res) => {
-  Note.find({}).then((result) => {
-    console.log("jjj", result);
-    res.json(result);
+// --- Routes ---
+// Get all phonebook entries
+app.get("/api/persons", (req, res) => {
+  PhoneBook.find({}).then((result) => {
+    res.status(200).json(result);
   });
 });
 
+// Get info (count and date)
 app.get("/api/info", (req, res) => {
-  res.json(notes);
+  PhoneBook.countDocuments({}).then((count) => {
+    res.send(
+      `<p>Phonebook has info for ${count} people</p><p>${new Date()}</p>`
+    );
+  });
 });
 
-app.post("/api/notes", (req, res) => {
-  const data = req.body;
+// Get a single phonebook entry by id
+app.get("/api/persons/:id", (req, res) => {
+  PhoneBook.findById(req.params.id)
+    .then((entry) => {
+      if (entry) {
+        res.json(entry);
+      } else {
+        res.status(404).end();
+      }
+    })
+    .catch(() => {
+      res.status(400).json({ error: "malformatted id" });
+    });
+});
 
-  const doesExist = notes.some((note) => Number(note.id) === Number(data.id));
-  if (doesExist) {
-    res.status(409).json({ message: `${data.id} already exist` });
-  } else {
-    // Generate a new unique id
-    const newId = (
-      Math.max(...notes.map((n) => Number(n.id)), 0) + 1
-    ).toString();
-    const newNote = { ...data, id: newId };
-    notes.push(newNote);
-    res.status(200).json({ message: "Created", note: newNote });
+// Add a new phonebook entry
+app.post("/api/persons", (req, res) => {
+  const { name, number } = req.body;
+  if (!name || !number) {
+    return res.status(400).json({ error: "name or number missing" });
   }
+  const newEntry = new PhoneBook({ name, number });
+  newEntry
+    .save()
+    .then((savedEntry) => {
+      res.status(201).json(savedEntry);
+    })
+    .catch((error) => {
+      res.status(500).json({ error: error.message });
+    });
 });
 
-app.get("/api/notes/:id", (req, res) => {
-  const id = req.params.id;
-  const note = notes.find((note) => note.id === id);
-  if (note) {
-    res.status(200).json({ message: `Note of ${id} fetch successfuol`, note });
-  } else {
-    res.status(400).json({ message: "Very Sad" });
-  }
+// Delete a phonebook entry
+app.delete("/api/persons/:id", (req, res) => {
+  PhoneBook.findByIdAndDelete(req.params.id)
+    .then((deletedEntry) => {
+      res.status(200).json(deletedEntry);
+    })
+    .catch(() => {
+      res.status(400).json({ error: "malformatted id" });
+    });
 });
 
-app.delete("/api/notes/:id", (req, res) => {
-  const id = req.params.id;
-  console.log("idddd", id);
-  const doesExist = notes.some((note) => note.id === id);
-  if (!doesExist) {
-    res.status(404).json({ message: `Note with id:${id} doesn't exist` });
-  } else {
-    notes = notes.filter((note) => note.id !== id);
-    res.status(200).json({ message: "Successfully deleted" });
-  }
+// --- Start Server ---
+const PORT = process.env.PORT || 3002;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
-
-const PORT = process.env.PORT ? process.env.PORT : 3002;
-app.listen(PORT);
-
-console.log("App running at port", PORT);

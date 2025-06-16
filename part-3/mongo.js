@@ -10,6 +10,7 @@ const phonebookSchema = new mongoose.Schema({
   name: String,
   number: Number,
 });
+
 const PhoneBook = mongoose.model("PhoneBook", phonebookSchema);
 
 // --- CLI mode ---
