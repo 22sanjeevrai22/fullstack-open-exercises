@@ -75,6 +75,7 @@ app.get("/api/persons/:id", (req, res) => {
       }
     })
     .catch(() => {
+      console.log("Error in backend index.js", error);
       res.status(400).json({ error: "malformatted id" });
     });
 });
