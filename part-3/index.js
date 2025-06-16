@@ -65,7 +65,7 @@ app.get("/api/info", (req, res) => {
 });
 
 // Get a single phonebook entry by id
-app.get("/api/persons/:id", (req, res) => {
+app.get("/api/persons/:id", (req, res, next) => {
   PhoneBook.findById(req.params.id)
     .then((entry) => {
       if (entry) {
@@ -74,14 +74,13 @@ app.get("/api/persons/:id", (req, res) => {
         res.status(404).end();
       }
     })
-    .catch(() => {
-      console.log("Error in backend index.js", error);
-      res.status(400).json({ error: "malformatted id" });
+    .catch((error) => {
+      next(error);
     });
 });
 
 // Add a new phonebook entry
-app.post("/api/persons", (req, res) => {
+app.post("/api/persons", (req, res, next) => {
   const { name, number } = req.body;
   if (!name || !number) {
     return res.status(400).json({ error: "name or number missing" });
@@ -93,8 +92,29 @@ app.post("/api/persons", (req, res) => {
       res.status(201).json(savedEntry);
     })
     .catch((error) => {
-      res.status(500).json({ error: error.message });
+      next(error);
     });
+});
+
+// Update a phonebook entry (PUT)
+app.put("/api/persons/:id", (req, res, next) => {
+  const { name, number } = req.body;
+  if (!name || !number) {
+    return res.status(400).json({ error: "name or number missing" });
+  }
+  PhoneBook.findByIdAndUpdate(
+    req.params.id,
+    { name, number },
+    { new: true, runValidators: true, context: 'query' }
+  )
+    .then(updatedEntry => {
+      if (updatedEntry) {
+        res.json(updatedEntry);
+      } else {
+        res.status(404).json({ error: "entry not found" });
+      }
+    })
+    .catch(error => next(error));
 });
 
 // Delete a phonebook entry
@@ -103,10 +123,28 @@ app.delete("/api/persons/:id", (req, res) => {
     .then((deletedEntry) => {
       res.status(200).json(deletedEntry);
     })
-    .catch(() => {
-      res.status(400).json({ error: "malformatted id" });
+    .catch((error) => {
+      next(error);
     });
 });
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message);
+
+  if (error.name === "CastError") {
+    return response.status(400).send({ error: "malformatted id" });
+  } else if (error.name === "ValidationError") {
+    return response.status(400).json({ error: error.message });
+  } else if (error.name === "MongoServerError") {
+    return response.status(500).json({ error: error.message });
+  }
+
+  // fallback for any other errors
+  response.status(500).json({ error: "internal server error" });
+};
+
+// this has to be the last loaded middleware, also all the routes should be registered before this!
+app.use(errorHandler);
 
 // --- Start Server ---
 const PORT = process.env.PORT || 3002;
