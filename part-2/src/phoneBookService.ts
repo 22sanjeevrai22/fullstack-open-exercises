@@ -1,7 +1,7 @@
 import axios from "axios";
-const baseUrl = "/api/notes";
+const baseUrl = "/api/persons";
 
-interface Note {
+interface PhoneBook {
   id: number;
   name: string;
   number?: string;
@@ -21,10 +21,11 @@ function create(formData: { name: string; number: string }) {
 
 function remove(id: number) {
   const deletedItem = axios.delete(`${baseUrl}/${id}`);
+  deletedItem.then((data) => console.log(data));
   return deletedItem;
 }
 
-function update(existingNote: Note, id: number) {
-  return axios.put<Note>(`${baseUrl}/${id}`, existingNote);
+function update(existingPhoneBook: PhoneBook, id: number) {
+  return axios.put<PhoneBook>(`${baseUrl}/${id}`, existingPhoneBook);
 }
 export { getAll, create, remove, update };

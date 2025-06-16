@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { getAll, create, remove, update } from "./noteService";
-interface Note {
+import { getAll, create, remove, update } from "./phoneBookService";
+interface PhoneBook {
   id: number;
   name: string;
   number?: string;
@@ -16,7 +16,7 @@ interface SearchProps {
 }
 
 interface DisplayNumberProps {
-  filteredNotes: Note[];
+  filteredPhoneBooks: PhoneBook[];
   handleRemove: (id: number) => void;
 }
 
@@ -30,15 +30,15 @@ const Search = ({ handleSearchChange }: SearchProps) => {
 };
 
 const DisplayNumbers = ({
-  filteredNotes,
+  filteredPhoneBooks,
   handleRemove,
 }: DisplayNumberProps) => {
   return (
     <>
       <h3>Numbers</h3>
-      {filteredNotes.map((note: Note) => (
+      {filteredPhoneBooks.map((phoneBook: PhoneBook) => (
         <div
-          key={note.id}
+          key={phoneBook.id}
           style={{
             backgroundColor: "#A9A9A9",
             padding: "4px",
@@ -49,7 +49,7 @@ const DisplayNumbers = ({
             justifyContent: "space-between",
           }}
         >
-          {note?.name}:{note?.number}
+          {phoneBook?.name}:{phoneBook?.number}
           <button
             style={{
               display: "",
@@ -57,7 +57,7 @@ const DisplayNumbers = ({
               margin: "3px",
               textAlign: "right",
             }}
-            onClick={() => handleRemove(note.id)}
+            onClick={() => handleRemove(phoneBook.id)}
           >
             Delete
           </button>
@@ -103,7 +103,7 @@ const Input = ({
   );
 };
 const App = () => {
-  const [notes, setNotes] = useState<Note[]>([]);
+  const [phoneBooks, setPhoneBooks] = useState<PhoneBook[]>([]);
   const [formData, setFormData] = useState<{ name: string; number: string }>({
     name: "",
     number: "",
@@ -111,20 +111,21 @@ const App = () => {
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    getAll().then((res: { data: Note[] }) => {
-      const data: Note[] = res.data;
+    getAll().then((res: { data: PhoneBook[] }) => {
+      const data: PhoneBook[] = res.data;
       console.log("dataaa", data);
-      setNotes(data);
+      setPhoneBooks(data);
     });
   }, []);
 
-  const filteredNotes: Note[] = notes.filter((note) =>
-    note.name?.toLowerCase().includes(search.toLowerCase())
+  const filteredPhoneBooks: PhoneBook[] = phoneBooks.filter((phoneBook) =>
+    phoneBook.name?.toLowerCase().includes(search.toLowerCase())
   );
 
   const checkAlreadyExisted = () => {
-    return notes.find(
-      (note) => note.name.toLowerCase() === formData.name.toLowerCase()
+    return phoneBooks.find(
+      (phoneBook) =>
+        phoneBook.name.toLowerCase() === formData.name.toLowerCase()
     );
   };
 
@@ -143,32 +144,32 @@ const App = () => {
       return;
     }
 
-    const existingNote = checkAlreadyExisted();
+    const existingPhoneBook = checkAlreadyExisted();
 
-    if (existingNote) {
+    if (existingPhoneBook) {
       const confirmUpdate = window.confirm(
         `${formData.name} is already in the phonebook. Replace the old number with the new one?`
       );
       if (confirmUpdate) {
-        const updatedNote = {
-          ...existingNote,
+        const updatedPhoneBook = {
+          ...existingPhoneBook,
           number: formData.number,
         };
-        update(updatedNote, existingNote.id).then((res) => {
-          setNotes((prev: Note[]) =>
-            prev.map((note) => {
-              if (note.id === existingNote.id) {
+        update(updatedPhoneBook, existingPhoneBook.id).then((res) => {
+          setPhoneBooks((prev: PhoneBook[]) =>
+            prev.map((phoneBook) => {
+              if (phoneBook.id === existingPhoneBook.id) {
                 return res.data;
               } else {
-                return note;
+                return phoneBook;
               }
             })
           );
         });
       }
     } else {
-      create(formData).then((res: { data: Note }) => {
-        setNotes((prev: Note[]) => [...prev, res.data]);
+      create(formData).then((res: { data: PhoneBook }) => {
+        setPhoneBooks((prev: PhoneBook[]) => [...prev, res.data]);
       });
     }
     setFormData({
@@ -180,7 +181,9 @@ const App = () => {
   const handleRemove = (inputId: number) => {
     if (confirm("Are you sure you want to remove?")) {
       remove(inputId).then(() => {
-        setNotes((prev) => prev.filter((note) => note.id !== inputId));
+        setPhoneBooks((prev) =>
+          prev.filter((phoneBook) => phoneBook.id !== inputId)
+        );
       });
     }
   };
@@ -199,7 +202,7 @@ const App = () => {
       />
 
       <DisplayNumbers
-        filteredNotes={filteredNotes}
+        filteredPhoneBooks={filteredPhoneBooks}
         handleRemove={handleRemove}
       />
     </div>
