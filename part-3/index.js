@@ -25,8 +25,20 @@ app.use(express.static("dist"));
 
 // --- Mongoose Schema & Model ---
 const phonebookSchema = new mongoose.Schema({
-  name: String,
-  number: Number,
+  name: { type: String, required: true },
+  number: {
+    type: String,
+    required: true,
+    minlength: 8,
+    validate: {
+      validator: function (v) {
+        // Must match: 2 or 3 digits, dash, then at least 5 digits
+        return /^\d{2,3}-\d+$/.test(v);
+      },
+      message: (props) =>
+        `${props.value} is not a valid phone number! Format must be XX-XXXXXXX or XXX-XXXXXXX`,
+    },
+  },
 });
 
 phonebookSchema.set("toJSON", {
@@ -105,20 +117,20 @@ app.put("/api/persons/:id", (req, res, next) => {
   PhoneBook.findByIdAndUpdate(
     req.params.id,
     { name, number },
-    { new: true, runValidators: true, context: 'query' }
+    { new: true, runValidators: true, context: "query" }
   )
-    .then(updatedEntry => {
+    .then((updatedEntry) => {
       if (updatedEntry) {
         res.json(updatedEntry);
       } else {
         res.status(404).json({ error: "entry not found" });
       }
     })
-    .catch(error => next(error));
+    .catch((error) => next(error));
 });
 
 // Delete a phonebook entry
-app.delete("/api/persons/:id", (req, res) => {
+app.delete("/api/persons/:id", (req, res,next) => {
   PhoneBook.findByIdAndDelete(req.params.id)
     .then((deletedEntry) => {
       res.status(200).json(deletedEntry);
