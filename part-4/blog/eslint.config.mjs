@@ -14,7 +14,7 @@ export default defineConfig([
       eqeqeq: "error",
       "no-console": "off",
       semi: ["error", "always"],
-      quotes: ["error", "double"],
+      quotes: ["off"],
       // Add more rules as needed
     },
   },

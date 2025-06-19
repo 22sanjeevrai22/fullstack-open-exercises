@@ -109,6 +109,7 @@ const App = () => {
     number: "",
   });
   const [search, setSearch] = useState("");
+  const [error, setError] = useState<{ message: string } | null>(null);
 
   useEffect(() => {
     getAll().then((res: { data: PhoneBook[] }) => {
@@ -168,9 +169,14 @@ const App = () => {
         });
       }
     } else {
-      create(formData).then((res: { data: PhoneBook }) => {
-        setPhoneBooks((prev: PhoneBook[]) => [...prev, res.data]);
-      });
+      create(formData)
+        .then((res: { data: PhoneBook }) => {
+          setPhoneBooks((prev: PhoneBook[]) => [...prev, res.data]);
+        })
+        .catch((err) => {
+          console.log("errrrrr", err);
+          setError(err);
+        });
     }
     setFormData({
       name: "",
@@ -191,6 +197,11 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook-Listen-My-Son</h2>
+      {error && (
+        <h2 className="" style={{ background: "red" }}>
+          {error?.message}
+        </h2>
+      )}
       <Search handleSearchChange={handleSearchChange} />
       <br />
       <br />
