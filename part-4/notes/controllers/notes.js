@@ -2,13 +2,13 @@
 const app = require("express").Router();
 const Note = require("../models/note");
 
-app.get("/", (req, res, next) => {
-  Note.find({})
-    .then((notes) => {
-      console.log("Notesss", notes);
-      res.json(notes);
-    })
-    .catch((error) => next(error));
+app.get("/", async (req, res, next) => {
+  try {
+    let notes = await Note.find({});
+    res.status(200).json(notes);
+  } catch (error) {
+    next(error);
+  }
 });
 
 //POST request to add a new note
@@ -21,7 +21,7 @@ app.post("/", (req, res, next) => {
 
   note
     .save()
-    .then((savedNote) => res.json(savedNote))
+    .then((savedNote) => res.status(201).json(savedNote))
     .catch((error) => next(error));
 });
 
