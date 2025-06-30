@@ -1,7 +1,7 @@
-const app = require("express").Router();
+const router = require("express").Router();
 const Blog = require("../models/blog");
 
-app.get("/", (req, res, next) => {
+router.get("/", (req, res, next) => {
   Blog.find({})
     .then((blogs) => {
       console.log("Blogs fetched from Database", blogs);
@@ -10,11 +10,14 @@ app.get("/", (req, res, next) => {
     .catch((err) => next(err));
 });
 
-app.post("/", (req, res, next) => {
+router.post("/", (req, res, next) => {
   const newBlog = req.body;
+  if (!newBlog.title || !newBlog.url) {
+    return res.status(400).json({ error: "title or url missing" });
+  }
   const blog = new Blog({
     title: newBlog.title,
-    author: newBlog.title,
+    author: newBlog.author,
     url: newBlog.url,
     likes: newBlog.likes,
   });
@@ -25,7 +28,7 @@ app.post("/", (req, res, next) => {
     .catch((err) => next(err));
 });
 
-app.get("/:id", (req, res, next) => {
+router.get("/:id", (req, res, next) => {
   const id = req.params.id;
   Blog.findById(id)
     .then((note) => {
@@ -38,7 +41,7 @@ app.get("/:id", (req, res, next) => {
     .catch((err) => next(err));
 });
 
-app.put("/:id", (req, res, next) => {
+router.put("/:id", (req, res, next) => {
   const id = req.params.id;
   const { title, author, url, likes } = req.body;
 
@@ -57,7 +60,7 @@ app.put("/:id", (req, res, next) => {
     .catch((err) => next(err));
 });
 
-app.delete("/:id", (req, res, next) => {
+router.delete("/:id", (req, res, next) => {
   const id = req.params.id;
 
   Blog.findByIdAndDelete(id)
@@ -71,4 +74,4 @@ app.delete("/:id", (req, res, next) => {
     .catch((err) => next(err));
 });
 
-module.exports = app;
+module.exports = router;

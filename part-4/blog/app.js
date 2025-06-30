@@ -1,0 +1,28 @@
+const express = require("express");
+const app = express();
+const mongoose = require("mongoose");
+const cors = require("cors");
+const blogController = require("./controllers/blogController");
+const { MONGODB_URI, PORT } = require("./utils/config");
+const {
+  errorHandler,
+  unknownEndPoint,
+  requestLogger,
+} = require("../notes/utils/middleware");
+
+const url = MONGODB_URI;
+
+mongoose.set("strictQuery", false);
+mongoose.connect(url);
+
+app.use(express.json());
+app.use(cors());
+app.use(express.static("dist"));
+app.use(requestLogger);
+
+app.use("/api/blogs", blogController);
+app.use(unknownEndPoint);
+
+app.use(errorHandler);
+
+module.exports = app;
