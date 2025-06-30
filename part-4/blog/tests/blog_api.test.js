@@ -82,6 +82,43 @@ test("if url is missing the status code 400 Bad Request is sent", async () => {
   await api.post("/api/blogs").send(newBlog).expect(400);
 });
 
+test("a blog can be deleted", async () => {
+  // Get all blogs
+  const blogsAtStart = await Blog.find({});
+  const blogToDelete = blogsAtStart[0];
+
+  await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+
+  const blogsAtEnd = await Blog.find({});
+  expect(blogsAtEnd).toHaveLength(initialBlogs.length - 1);
+
+  const titles = blogsAtEnd.map((b) => b.title);
+  expect(titles).not.toContain(blogToDelete.title);
+});
+
+test("a blog's likes can be updated", async () => {
+  // Get all blogs
+  const blogsAtStart = await Blog.find({});
+  const blogToUpdate = blogsAtStart[0];
+
+  const updatedData = {
+    ...blogToUpdate.toJSON(),
+    likes: blogToUpdate.likes + 10,
+  };
+
+  const response = await api
+    .put(`/api/blogs/${blogToUpdate.id}`)
+    .send(updatedData)
+    .expect(200)
+    .expect("Content-Type", /application\/json/);
+
+  expect(response.body.likes).toBe(blogToUpdate.likes + 10);
+
+  const blogsAtEnd = await Blog.find({});
+  const updatedBlog = blogsAtEnd.find((b) => b.id === blogToUpdate.id);
+  expect(updatedBlog.likes).toBe(blogToUpdate.likes + 10);
+});
+
 afterAll(async () => {
   await mongoose.connection.close();
 });

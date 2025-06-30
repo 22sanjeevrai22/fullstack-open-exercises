@@ -41,37 +41,37 @@ router.get("/:id", (req, res, next) => {
     .catch((err) => next(err));
 });
 
-router.put("/:id", (req, res, next) => {
-  const id = req.params.id;
-  const { title, author, url, likes } = req.body;
-
-  Blog.findByIdAndUpdate(
-    id,
-    { title, author, url, likes },
-    { new: true, runValidators: true, context: "query" }
-  )
-    .then((updatedBlog) => {
-      if (updatedBlog) {
-        res.json(updatedBlog);
-      } else {
-        res.status(404).json({ error: "Blog not found" });
-      }
-    })
-    .catch((err) => next(err));
+router.put("/:id", async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    const { title, author, url, likes } = req.body;
+    const updatedBlog = await Blog.findByIdAndUpdate(
+      id,
+      { title, author, url, likes },
+      { new: true, runValidators: true, context: "query" }
+    );
+    if (updatedBlog) {
+      res.json(updatedBlog);
+    } else {
+      res.status(404).json({ error: "Blog not found" });
+    }
+  } catch (err) {
+    next(err);
+  }
 });
 
-router.delete("/:id", (req, res, next) => {
-  const id = req.params.id;
-
-  Blog.findByIdAndDelete(id)
-    .then((deletedBlog) => {
-      if (deletedBlog) {
-        res.status(204).end();
-      } else {
-        res.status(404).json({ error: "Blog not found" });
-      }
-    })
-    .catch((err) => next(err));
+router.delete("/:id", async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    const deletedBlog = await Blog.findByIdAndDelete(id);
+    if (deletedBlog) {
+      res.status(204).end();
+    } else {
+      res.status(404).json({ error: "Blog not found" });
+    }
+  } catch (err) {
+    next(err);
+  }
 });
 
 module.exports = router;
