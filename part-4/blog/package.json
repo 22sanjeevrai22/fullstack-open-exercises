@@ -8,7 +8,7 @@
     "prod": "node index.js",
     "lint": "eslint index.js",
     "lint:watch": "chokidar './**/*.js' -c 'eslint .'",
-    "test": "jest --verbose"
+    "test": "jest --verbose --test-concurrency=1"
   },
   "author": "",
   "license": "ISC",

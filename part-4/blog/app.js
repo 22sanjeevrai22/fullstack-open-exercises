@@ -9,8 +9,7 @@ const {
   errorHandler,
   unknownEndPoint,
   requestLogger,
-} = require("../notes/utils/middleware");
-
+} = require("./utils/middleware");
 const url = MONGODB_URI;
 
 mongoose.set("strictQuery", false);

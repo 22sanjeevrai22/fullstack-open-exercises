@@ -3,6 +3,7 @@ const Blog = require("../models/blog");
 
 router.get("/", (req, res, next) => {
   Blog.find({})
+    .populate("user", { username: 1, name: 1 })
     .then((blogs) => {
       console.log("Blogs fetched from Database", blogs);
       res.json(blogs);
@@ -20,6 +21,7 @@ router.post("/", (req, res, next) => {
     author: newBlog.author,
     url: newBlog.url,
     likes: newBlog.likes,
+    user: newBlog.user,
   });
 
   blog

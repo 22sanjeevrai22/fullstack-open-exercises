@@ -8,11 +8,9 @@ const bcrypt = require("bcrypt");
 
 describe("when there is initially one user in db", () => {
   beforeEach(async () => {
-    // await User.deleteMany({});
-
+    await User.deleteMany({});
     const passwordHash = await bcrypt.hash("sekret", 10);
-    const user = new User({ username: "root", passwordHash, name: "Sanjeev" });
-
+    const user = new User({ username: "root", passwordHash });
     await user.save();
   });
 
@@ -20,9 +18,9 @@ describe("when there is initially one user in db", () => {
     const usersAtStart = await helper.usersInDb();
 
     const newUser = {
-      username: "mluukkai",
-      name: "Matti Luukkainen",
-      password: "salainen",
+      name: "Goku Tero Dai",
+      username: "Goku99",
+      password: "goku99",
     };
 
     await api
@@ -54,7 +52,7 @@ describe("when there is initially one user in db", () => {
       .expect("Content-Type", /application\/json/);
 
     const usersAtEnd = await helper.usersInDb();
-    expect(result.body.error).toContain("expected `username` to be unique");
+    expect(result.body.error).toContain("Username must be unique");
     expect(usersAtEnd).toHaveLength(usersAtStart.length);
   });
 });

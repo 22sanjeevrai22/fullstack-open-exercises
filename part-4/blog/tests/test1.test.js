@@ -1,5 +1,5 @@
-const { test, describe } = require("node:test");
-const assert = require("node:assert");
+// const { test, describe } = require("node:test");
+// const assert = require("node:assert");
 const _ = require("lodash");
 const listHelper = require("../utils/list_helper");
 
@@ -57,14 +57,14 @@ const blogs = [
 describe("This is describe section total likes", () => {
   test("The total likes is", () => {
     const result = listHelper.totalLikes(blogs);
-    assert.strictEqual(result, 39);
+    expect(result).toBe(39);
   });
 });
 
 describe("This is describe section for faviourite post", () => {
   test("The favourite blog", () => {
     const result = listHelper.favouriteBlog(blogs);
-    assert.deepStrictEqual(result, blogs[2]);
+    expect(result).toEqual(blogs[2]);
   });
 });
 
@@ -72,7 +72,7 @@ describe("This is describe section for most blogs.", () => {
   test("The author for most blogs is", () => {
     const result = listHelper.mostBlogs(blogs);
     const expected = { author: "Robert C. Martin", blogs: 3 };
-    assert.ok(_.isEqual(result, expected));
+    expect(result).toEqual(expected);
   });
 });
 
@@ -80,6 +80,6 @@ describe("This is describe section for most likes.", () => {
   test("The author for most number of likes is", () => {
     const result = listHelper.mostLikes(blogs);
     const expected = { author: "Edsger W. Dijkstra", likes: 20 };
-    assert.ok(_.isEqual(result, expected));
+    expect(result).toEqual(expected);
   });
 });
