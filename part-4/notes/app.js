@@ -3,7 +3,9 @@ const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 const cors = require("cors");
-const notesController = require("./controllers/notes");
+const notesController = require("./controllers/notesController");
+const authController = require("./controllers/authController");
+const userController = require("./controllers/userController");
 const { MONGODB_URI, PORT } = require("./utils/config");
 const {
   errorHandler,
@@ -22,6 +24,8 @@ app.use(cors());
 app.use(express.static("dist"));
 app.use(requestLogger);
 
+app.use("/api/auth", authController);
+app.use("/api/users", userController);
 app.use("/api/notes", notesController);
 app.use(unknownEndPoint);
 

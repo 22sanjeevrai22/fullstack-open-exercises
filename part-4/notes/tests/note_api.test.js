@@ -41,11 +41,13 @@ describe("Testing GET Method", () => {
   });
 });
 
-describe("Testing the POST mehod", () => {
+describe("Testing the POST method", () => {
   test("a valid note can be added ", async () => {
     const newNote = {
-      content: "async/await simplifies making async calls",
-      important: true,
+      content:
+        "BUser id of the note creator is at the start sent along the request.",
+      correct: true,
+      user: "68628ea1dea317078f613c72",
     };
 
     await api
