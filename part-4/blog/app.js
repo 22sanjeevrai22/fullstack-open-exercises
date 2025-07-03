@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const blogController = require("./controllers/blogController");
 const userController = require("./controllers/userController");
+const authController = require("./controllers/authController");
 const { MONGODB_URI, PORT } = require("./utils/config");
 const {
   errorHandler,
@@ -20,6 +21,7 @@ app.use(cors());
 app.use(express.static("dist"));
 app.use(requestLogger);
 
+app.use("/api/auth/login", authController);
 app.use("/api/users", userController);
 app.use("/api/blogs", blogController);
 
