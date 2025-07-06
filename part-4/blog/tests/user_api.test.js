@@ -10,7 +10,10 @@ describe("when there is initially one user in db", () => {
   beforeEach(async () => {
     await User.deleteMany({});
     const passwordHash = await bcrypt.hash("sekret", 10);
-    const user = new User({ username: "root", passwordHash });
+    const user = new User({
+      username: `root_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      passwordHash,
+    });
     await user.save();
   });
 
@@ -19,7 +22,9 @@ describe("when there is initially one user in db", () => {
 
     const newUser = {
       name: "Goku Tero Dai",
-      username: "Goku99",
+      username: `Goku99_${Date.now()}_${Math.random()
+        .toString(36)
+        .substr(2, 9)}`,
       password: "goku99",
     };
 
@@ -39,8 +44,19 @@ describe("when there is initially one user in db", () => {
   test("creation fails with proper statuscode and message if username already taken", async () => {
     const usersAtStart = await helper.usersInDb();
 
+    // Create a user first
+    const existingUser = {
+      username: `duplicate_${Date.now()}_${Math.random()
+        .toString(36)
+        .substr(2, 9)}`,
+      name: "Existing User",
+      password: "password123",
+    };
+    await api.post("/api/users").send(existingUser);
+
+    // Try to create another user with the same username
     const newUser = {
-      username: "root",
+      username: existingUser.username,
       name: "Superuser",
       password: "salainen",
     };
@@ -53,7 +69,7 @@ describe("when there is initially one user in db", () => {
 
     const usersAtEnd = await helper.usersInDb();
     expect(result.body.error).toContain("Username must be unique");
-    expect(usersAtEnd).toHaveLength(usersAtStart.length);
+    expect(usersAtEnd).toHaveLength(usersAtStart.length + 1); // Only the first user was created
   });
 });
 

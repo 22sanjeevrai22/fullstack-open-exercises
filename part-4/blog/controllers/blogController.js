@@ -96,10 +96,7 @@ blogRouter.delete("/:id", async (req, res, next) => {
     const deletedBlog = await Blog.findByIdAndDelete(blogId);
 
     if (deletedBlog) {
-      res.status(200).json({
-        message: `Blog with id ${blogId} deleted.`,
-        data: deletedBlog,
-      });
+      res.status(204).end();
     } else {
       res.status(404).json({ error: "Blog not found" });
     }
