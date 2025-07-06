@@ -1,7 +1,18 @@
-const router = require("express").Router();
+const blogRouter = require("express").Router();
 const Blog = require("../models/blog");
+const User = require("../models/user");
+const jwt = require("jsonwebtoken");
 
-router.get("/", (req, res, next) => {
+//Getting Token from Bearer
+const getTokenFrom = (req) => {
+  const authorization = req.get("authorization");
+  if (authorization && authorization.startsWith("Bearer ")) {
+    return authorization.replace("Bearer ", "");
+  }
+  return null;
+};
+
+blogRouter.get("/", (req, res, next) => {
   Blog.find({})
     .populate("user", { username: 1, name: 1 })
     .then((blogs) => {
@@ -11,26 +22,50 @@ router.get("/", (req, res, next) => {
     .catch((err) => next(err));
 });
 
-router.post("/", (req, res, next) => {
+blogRouter.post("/", async (req, res, next) => {
+  console.log("I am in the blogController", req.body);
   const newBlog = req.body;
-  if (!newBlog.title || !newBlog.url) {
-    return res.status(400).json({ error: "title or url missing" });
-  }
-  const blog = new Blog({
-    title: newBlog.title,
-    author: newBlog.author,
-    url: newBlog.url,
-    likes: newBlog.likes,
-    user: newBlog.user,
-  });
 
-  blog
-    .save()
-    .then((savedBlog) => res.json(savedBlog))
-    .catch((err) => next(err));
+  try {
+    const decodedToken = jwt.verify(getTokenFrom(req), process.env.SECRET);
+    console.log(decodedToken);
+    if (!decodedToken.id) {
+      return res.status(401).json({ error: "token invalid" });
+    }
+    const user = await User.findById(decodedToken.id);
+
+    if (!user) {
+      return res.status(400).json({ error: "userId missing or not valid" });
+    }
+
+    if (!newBlog.title || !newBlog.url) {
+      return res.status(400).json({ error: "title or url missing" });
+    }
+
+    const blog = new Blog({
+      title: newBlog.title,
+      author: newBlog.author,
+      url: newBlog.url,
+      likes: newBlog.likes,
+      user: user._id,
+    });
+
+    const savedBlog = await blog.save();
+    await savedBlog.populate({
+      path: "user",
+      select: "username name",
+    });
+
+    user.blogs = [...user.blogs, savedBlog];
+    await user.save();
+
+    res.status(201).json(savedBlog);
+  } catch (err) {
+    next(err);
+  }
 });
 
-router.get("/:id", (req, res, next) => {
+blogRouter.get("/:id", (req, res, next) => {
   const id = req.params.id;
   Blog.findById(id)
     .then((note) => {
@@ -43,7 +78,7 @@ router.get("/:id", (req, res, next) => {
     .catch((err) => next(err));
 });
 
-router.put("/:id", async (req, res, next) => {
+blogRouter.put("/:id", async (req, res, next) => {
   try {
     const id = req.params.id;
     const { title, author, url, likes } = req.body;
@@ -62,7 +97,7 @@ router.put("/:id", async (req, res, next) => {
   }
 });
 
-router.delete("/:id", async (req, res, next) => {
+blogRouter.delete("/:id", async (req, res, next) => {
   try {
     const id = req.params.id;
     const deletedBlog = await Blog.findByIdAndDelete(id);
@@ -76,4 +111,4 @@ router.delete("/:id", async (req, res, next) => {
   }
 });
 
-module.exports = router;
+module.exports = blogRouter;
