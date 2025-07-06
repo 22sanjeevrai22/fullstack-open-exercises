@@ -11,6 +11,7 @@ const {
   unknownEndPoint,
   requestLogger,
   tokenExtractor,
+  userExtractor,
 } = require("./utils/middleware");
 const url = MONGODB_URI;
 
@@ -23,9 +24,10 @@ app.use(express.static("dist"));
 app.use(requestLogger);
 
 app.use("/api/auth/login", authController);
+
 app.use(tokenExtractor);
 app.use("/api/users", userController);
-app.use("/api/blogs", blogController);
+app.use("/api/blogs", userExtractor, blogController);
 
 app.use(unknownEndPoint);
 

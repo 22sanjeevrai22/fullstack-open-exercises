@@ -1,4 +1,7 @@
 const { info } = require("./logger");
+const User = require("../models/user");
+const jwt = require("jsonwebtoken");
+
 const requestLogger = (req, res, next) => {
   info("Method:", req.method);
   info("Path:  ", req.path);
@@ -18,6 +21,30 @@ const tokenExtractor = (req, res, next) => {
     next();
   } catch (err) {
     next(err);
+  }
+};
+
+const userExtractor = async (req, res, next) => {
+  console.log("token of user", req.token);
+  console.log("secret key", process.env.SECRET);
+  try {
+    const decodedToken = jwt.verify(req.token, process.env.SECRET);
+    console.log("decodedToken", decodedToken);
+    if (!decodedToken.id) {
+      return res.status(401).json({ error: "token invalid" });
+    }
+
+    const user = await User.findById(decodedToken.id);
+
+    if (!user) {
+      return res.status(400).json({ error: "userId missing or not valid" });
+    }
+
+    req.user = user;
+
+    next();
+  } catch (error) {
+    next(error);
   }
 };
 
@@ -50,4 +77,5 @@ module.exports = {
   errorHandler,
   requestLogger,
   tokenExtractor,
+  userExtractor,
 };
