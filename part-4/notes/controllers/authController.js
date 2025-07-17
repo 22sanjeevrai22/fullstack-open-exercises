@@ -3,8 +3,10 @@ const bcrypt = require("bcrypt");
 const loginRouter = require("express").Router();
 const User = require("../models/user");
 
-loginRouter.post("/", async (req, res) => {
+loginRouter.post("/login", async (req, res) => {
+  console.log("first, ", req.body);
   const { username, password } = req.body;
+  console.log("second", req.body);
 
   const user = await User.findOne({ username });
   const passwordCorrect =
@@ -21,13 +23,13 @@ loginRouter.post("/", async (req, res) => {
     id: user._id,
   };
 
-  console.log("body", req.body);
-
   const token = jwt.sign(userForToken, process.env.SECRET, {
-    expiresIn: 10,
+    expiresIn: 1000,
   });
 
-  res.status(200).send({ token, username: user.username, name: user.name });
+  res
+    .status(200)
+    .send({ token, username: user.username, name: user.name, token });
 });
 
 module.exports = loginRouter;
