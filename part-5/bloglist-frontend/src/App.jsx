@@ -8,6 +8,7 @@ const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [user, setUser] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
 
   //A wrapper for setUser setter
   const handleSetUser = (inputUser) => {
@@ -19,7 +20,11 @@ const App = () => {
   };
 
   useEffect(() => {
-    getAll().then((blogs) => setBlogs(blogs));
+    getAll().then((blogs) => {
+      console.log("All blog list ", blogs);
+
+      return setBlogs(blogs);
+    });
   }, []);
 
   useEffect(() => {
@@ -97,7 +102,19 @@ const App = () => {
       try {
         const createdBlog = await create(title, author, url, likes);
         handleSetBlogs(createdBlog);
-      } catch (error) {}
+        setSuccessMessage(
+          `A new blog ${createdBlog.title} by ${createdBlog.author} added`
+        );
+        setTimeout(() => {
+          setSuccessMessage(null);
+        }, 5000);
+      } catch (error) {
+        setErrorMessage("Error Occured During Blog Creation!");
+        setTimeout(() => {
+          setErrorMessage(null);
+        }, 5000);
+        console.log(error);
+      }
     };
     return (
       <>
@@ -154,8 +171,10 @@ const App = () => {
     <div>
       <h2>My Blog App</h2>
 
-      <Notification message={errorMessage} />
-
+      <Notification
+        errorMessage={errorMessage}
+        successMessage={successMessage}
+      />
       {!user && <LoginForm handleSetUser={handleSetUser} />}
       {user && (
         <div>

@@ -16,9 +16,15 @@ const create = (title, author, url, likes) => {
   const config = {
     headers: { Authorization: token },
   };
-  const response = axios.post(baseUrl, { title, author, url, likes });
+  const response = axios.post(baseUrl, { title, author, url, likes }, config);
+
   const createdBlog = response.then((blog) => blog.data);
   return createdBlog;
 };
 
-export { getAll, create, setToken };
+const update = (id, newBlog) => {
+  const respnose = axios.put(`${baseUrl}/${id}`, newBlog);
+  return respnose.then((updatedBlog) => updatedBlog.data);
+};
+
+export { getAll, create, setToken, update };

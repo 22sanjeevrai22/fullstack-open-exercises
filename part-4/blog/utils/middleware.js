@@ -26,7 +26,6 @@ const tokenExtractor = (req, res, next) => {
 
 const userExtractor = async (req, res, next) => {
   console.log("token of user", req.token);
-  console.log("secret key", process.env.SECRET);
 
   if (!req.token) {
     return res.status(401).json({ error: "token missing" });

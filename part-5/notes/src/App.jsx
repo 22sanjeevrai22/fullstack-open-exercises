@@ -16,14 +16,12 @@ const App = () => {
 
   useEffect(() => {
     noteService.getAll().then((initialNotes) => {
-      console.log("InitialNotes", initialNotes);
       setNotes(initialNotes);
     });
-    console.log("Userrr State", user);
   }, []);
 
   useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem("loggedNoteappUser");
+    const loggedUserJSON = window.localStorage.getItem("noteUserInfo");
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON);
       setUser(user);
@@ -73,7 +71,7 @@ const App = () => {
     event.preventDefault();
     try {
       const user = await login({ username, password });
-      window.localStorage.setItem("loggedNoteappUser", JSON.stringify(user));
+      window.localStorage.setItem("noteUserInfo", JSON.stringify(user));
       noteService.setToken(user.token);
       setUser(user);
       setUsername("");
@@ -115,13 +113,13 @@ const App = () => {
   const noteForm = () => (
     <form onSubmit={addNote}>
       <input value={newNote} onChange={handleNoteChange} />
-      <button type="submit">save</button>
+      <button type="submit">Save</button>
     </form>
   );
 
   return (
     <div>
-      <h1>Notes</h1>
+      <h1>My Note App</h1>
       <Notification message={errorMessage} />
 
       <h2>Login</h2>

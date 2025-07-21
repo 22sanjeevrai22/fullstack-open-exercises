@@ -14,7 +14,6 @@ const getAll = async () => {
 };
 
 const create = async (newObject) => {
-  debugger;
   const config = {
     headers: { Authorization: token },
   };

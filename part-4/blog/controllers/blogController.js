@@ -1,5 +1,6 @@
 const blogRouter = require("express").Router();
 const Blog = require("../models/blog");
+const { userExtractor } = require("../utils/middleware");
 
 //Getting Token from Bearer
 
@@ -13,7 +14,7 @@ blogRouter.get("/", (req, res, next) => {
     .catch((err) => next(err));
 });
 
-blogRouter.post("/", async (req, res, next) => {
+blogRouter.post("/", userExtractor, async (req, res, next) => {
   console.log("I am in the blogController", req.body);
   const newBlog = req.body;
   const user = req.user;
@@ -46,7 +47,7 @@ blogRouter.post("/", async (req, res, next) => {
   }
 });
 
-blogRouter.get("/:id", (req, res, next) => {
+blogRouter.get("/:id", userExtractor, (req, res, next) => {
   const id = req.params.id;
   Blog.findById(id)
     .then((note) => {
@@ -59,7 +60,7 @@ blogRouter.get("/:id", (req, res, next) => {
     .catch((err) => next(err));
 });
 
-blogRouter.put("/:id", async (req, res, next) => {
+blogRouter.put("/:id", userExtractor, async (req, res, next) => {
   try {
     const id = req.params.id;
     const { title, author, url, likes } = req.body;
@@ -78,7 +79,7 @@ blogRouter.put("/:id", async (req, res, next) => {
   }
 });
 
-blogRouter.delete("/:id", async (req, res, next) => {
+blogRouter.delete("/:id", userExtractor, async (req, res, next) => {
   const user = req.user;
   try {
     const blogId = req.params.id;

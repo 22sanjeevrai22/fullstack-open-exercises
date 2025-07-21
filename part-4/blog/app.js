@@ -23,11 +23,11 @@ app.use(cors());
 app.use(express.static("dist"));
 app.use(requestLogger);
 
-app.use("/api/auth/login", authController);
+app.use("/api/auth", authController);
 
-app.use(tokenExtractor);
 app.use("/api/users", userController);
-app.use("/api/blogs", userExtractor, blogController);
+app.use(tokenExtractor);
+app.use("/api/blogs", blogController);
 
 app.use(unknownEndPoint);
 
