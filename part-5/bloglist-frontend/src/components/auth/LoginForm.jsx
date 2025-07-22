@@ -9,6 +9,7 @@ const LoginForm = ({ handleSetUser, setErrorMessageWrapper }) => {
     e.preventDefault();
     try {
       const user = await login({ username, password });
+      console.log("userrr in login form", user);
       window.localStorage.setItem("blogUserInfo", JSON.stringify(user));
       handleSetUser(user);
       setUsername("");

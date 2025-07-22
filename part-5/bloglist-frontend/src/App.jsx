@@ -27,14 +27,13 @@ const App = () => {
   useEffect(() => {
     getAll().then((blogs) => {
       console.log("All blog list ", blogs);
-
-      return setBlogs(blogs);
+      setBlogs(blogs);
     });
   }, []);
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem("blogUserInfo");
-    if (loggedUserJSON) {
+    if (loggedUserJSON && loggedUserJSON !== "undefined") {
       const user = JSON.parse(loggedUserJSON);
       setUser(user);
       setToken(user.token);
