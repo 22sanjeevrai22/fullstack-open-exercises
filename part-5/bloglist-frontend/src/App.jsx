@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import Blog from "./components/Blog";
 import Notification from "./components/Notification";
 import { getAll, setToken, create } from "./services/blogService";
-import { login } from "./services/authService";
+import Togglable from "./components/Togglable";
+import LoginForm from "./components/auth/LoginForm";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -13,6 +14,10 @@ const App = () => {
   //A wrapper for setUser setter
   const handleSetUser = (inputUser) => {
     setUser(inputUser);
+  };
+
+  const setErrorMessageWrapper = (err) => {
+    setErrorMessage(err);
   };
 
   const handleSetBlogs = (createdBlog) => {
@@ -42,52 +47,11 @@ const App = () => {
     setToken(null);
   };
 
-  const LoginForm = ({ handleSetUser }) => {
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
-
-    const handleLogin = async (e) => {
-      e.preventDefault();
-      try {
-        const user = await login({ username, password });
-        window.localStorage.setItem("blogUserInfo", JSON.stringify(user));
-        setToken(user.token);
-        handleSetUser(user);
-        setUsername("");
-        setPassword("");
-      } catch (error) {
-        setErrorMessage("Wrong credentials");
-        setTimeout(() => {
-          setErrorMessage(null);
-        }, 5000);
-      }
-    };
+  const LoginFormComponent = ({ handleSetUser }) => {
     return (
-      <>
-        <form onSubmit={handleLogin}>
-          <div>
-            <label htmlFor="username">Username:</label>
-            <input
-              placeholder="Username hmm.."
-              value={username}
-              type="text"
-              name="username"
-              onChange={(e) => setUsername(e.target.value)}
-            />
-          </div>
-          <div>
-            <label htmlFor="password">Password:</label>
-            <input
-              placeholder="Password hmm.."
-              value={password}
-              type="password"
-              name="password"
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
-          <button type="submit">Login</button>
-        </form>
-      </>
+      <Togglable buttonLabel="New note">
+        <LoginForm handleSetUser={handleSetUser} />
+      </Togglable>
     );
   };
 
@@ -165,17 +129,15 @@ const App = () => {
     );
   };
 
-  console.log("USerrrr", user);
-
   return (
     <div>
       <h2>My Blog App</h2>
 
       <Notification
-        errorMessage={errorMessage}
+        setErrorMessageWrapper={setErrorMessageWrapper}
         successMessage={successMessage}
       />
-      {!user && <LoginForm handleSetUser={handleSetUser} />}
+      {!user && <LoginFormComponent handleSetUser={handleSetUser} />}
       {user && (
         <div>
           <button onClick={handleLogout}>Logout</button>
