@@ -8,7 +8,7 @@ blogRouter.get("/", (req, res, next) => {
   Blog.find({})
     .populate("user", { username: 1, name: 1 })
     .then((blogs) => {
-      console.log("Blogs fetched from Database", blogs);
+      // console.log("Blogs fetched from Database", blogs);
       res.json(blogs);
     })
     .catch((err) => next(err));
@@ -29,7 +29,7 @@ blogRouter.post("/", userExtractor, async (req, res, next) => {
       author: newBlog.author,
       url: newBlog.url,
       likes: newBlog.likes,
-      user: user._id,
+      user: user._id || user.id,
     });
 
     const savedBlog = await blog.save();

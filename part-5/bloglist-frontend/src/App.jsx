@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
 import Blog from "./components/Blog";
 import Notification from "./components/Notification";
 import { getAll, setToken, create } from "./services/blogService";
 import Togglable from "./components/Togglable";
 import LoginForm from "./components/auth/LoginForm";
+import { useEffect, useState } from "react";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -20,8 +20,21 @@ const App = () => {
     setErrorMessage(err);
   };
 
-  const handleSetBlogs = (createdBlog) => {
-    setBlogs((prev) => [...prev, createdBlog]);
+  const handleSetBlogs = (newBlog) => {
+    console.log(newBlog.id);
+    setBlogs((prevBlogs) => {
+      const updated = prevBlogs.map((blog) => {
+        if (blog.id === newBlog.id) {
+          console.log("Updating blog:", blog, "to", newBlog);
+          return newBlog;
+        } else {
+          return blog;
+        }
+      });
+
+      console.log("Updated blogs array:", updated);
+      return updated;
+    });
   };
 
   useEffect(() => {
@@ -146,7 +159,7 @@ const App = () => {
       )}
 
       {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} />
+        <Blog handleSetBlogs={handleSetBlogs} key={blog.id} blog={blog} />
       ))}
     </div>
   );

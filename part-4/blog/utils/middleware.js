@@ -13,6 +13,8 @@ const requestLogger = (req, res, next) => {
 const tokenExtractor = (req, res, next) => {
   try {
     const authorization = req.get("authorization");
+    console.log("token of user in token Extractor", authorization);
+
     if (authorization && authorization.startsWith("Bearer ")) {
       req.token = authorization.replace("Bearer ", "");
     } else {
@@ -25,8 +27,6 @@ const tokenExtractor = (req, res, next) => {
 };
 
 const userExtractor = async (req, res, next) => {
-  console.log("token of user", req.token);
-
   if (!req.token) {
     return res.status(401).json({ error: "token missing" });
   }

@@ -1,14 +1,20 @@
 import { useState } from "react";
+import { update } from "../services/blogService";
+const blogStyle = {
+  paddingTop: 10,
+  paddingLeft: 2,
+  border: "solid",
+  borderWidth: 1,
+  marginBottom: 5,
+};
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, handleSetBlogs }) => {
   const [showDetails, setShowDetails] = useState(false);
 
-  const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
-    border: "solid",
-    borderWidth: 1,
-    marginBottom: 5,
+  const handleClickLike = async () => {
+    const newBlog = { ...blog, likes: blog.likes + 1 };
+    const updatedBlog = await update(blog.id, newBlog);
+    handleSetBlogs(newBlog);
   };
 
   return (
@@ -22,7 +28,7 @@ const Blog = ({ blog }) => {
           <h5>Author: {blog.author}</h5>
           <h5>
             Likes:{blog.likes}
-            <button>like</button>
+            <button onClick={handleClickLike}>like</button>
           </h5>
         </>
       )}

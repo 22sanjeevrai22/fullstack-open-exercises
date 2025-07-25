@@ -13,6 +13,7 @@ const getAll = () => {
 };
 
 const create = (title, author, url, likes) => {
+  console.log("In blog create frontend", token);
   const config = {
     headers: { Authorization: token },
   };
@@ -23,8 +24,13 @@ const create = (title, author, url, likes) => {
 };
 
 const update = (id, newBlog) => {
-  const respnose = axios.put(`${baseUrl}/${id}`, newBlog);
-  return respnose.then((updatedBlog) => updatedBlog.data);
+  const config = {
+    headers: { Authorization: token },
+  };
+  const respnose = axios.put(`${baseUrl}/${id}`, newBlog, config);
+  return respnose
+    .then((updatedBlog) => updatedBlog.data)
+    .catch((err) => console.log("Error Updating Data", err));
 };
 
 export { getAll, create, setToken, update };
