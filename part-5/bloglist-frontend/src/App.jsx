@@ -4,6 +4,7 @@ import { getAll, setToken, create } from "./services/blogService";
 import Togglable from "./components/Togglable";
 import LoginForm from "./components/auth/LoginForm";
 import { useEffect, useState } from "react";
+import { extractErrorMessage, isAuthError } from "./utils/errorUtils";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -12,36 +13,17 @@ const App = () => {
   const [successMessage, setSuccessMessage] = useState(null);
 
   //A wrapper for setUser setter
-  const handleSetUser = (inputUser) => {
-    setUser(inputUser);
-  };
-
-  const setErrorMessageWrapper = (err) => {
-    setErrorMessage(err);
-  };
-
-  const handleSetBlogs = (newBlog) => {
-    console.log(newBlog.id);
-    setBlogs((prevBlogs) => {
-      const updated = prevBlogs.map((blog) => {
-        if (blog.id === newBlog.id) {
-          console.log("Updating blog:", blog, "to", newBlog);
-          return newBlog;
-        } else {
-          return blog;
-        }
-      });
-
-      console.log("Updated blogs array:", updated);
-      return updated;
-    });
-  };
 
   useEffect(() => {
-    getAll().then((blogs) => {
-      console.log("All blog list ", blogs);
-      setBlogs(blogs);
-    });
+    getAll()
+      .then((blogs) => {
+        setBlogs(blogs);
+      })
+      .catch((error) => {
+        const message = extractErrorMessage(error, "Failed to load blogs");
+        setErrorMessage(message);
+        setTimeout(() => setErrorMessage(null), 5000);
+      });
   }, []);
 
   useEffect(() => {
@@ -53,21 +35,36 @@ const App = () => {
     }
   }, []);
 
+  const setUserWrapper = (inputUser) => {
+    setUser(inputUser);
+  };
+
+  const setErrorMessageWrapper = (err) => {
+    setErrorMessage(err);
+  };
+
+  const handleSetBlogs = (newBlog) => {
+    setBlogs(newBlog);
+  };
+
   const handleLogout = () => {
     window.localStorage.removeItem("blogUserInfo");
     setUser(null);
     setToken(null);
   };
 
-  const LoginFormComponent = ({ handleSetUser }) => {
+  const LoginFormComponent = ({ setUserWrapper, setErrorMessageWrapper }) => {
     return (
-      <Togglable buttonLabel="New note">
-        <LoginForm handleSetUser={handleSetUser} />
+      <Togglable buttonLabel="Add New Note">
+        <LoginForm
+          setUserWrapper={setUserWrapper}
+          setErrorMessageWrapper={setErrorMessageWrapper}
+        />
       </Togglable>
     );
   };
 
-  const BlogForm = ({ handleSetBlogs }) => {
+  const BlogForm = ({ handleSetBlogs, blogs, setErrorMessageWrapper }) => {
     const [title, setTitle] = useState("");
     const [author, setAuthor] = useState("");
     const [url, setUrl] = useState("");
@@ -77,19 +74,33 @@ const App = () => {
       e.preventDefault();
       try {
         const createdBlog = await create(title, author, url, likes);
-        handleSetBlogs(createdBlog);
+        handleSetBlogs([...blogs, createdBlog]);
         setSuccessMessage(
           `A new blog ${createdBlog.title} by ${createdBlog.author} added`
         );
         setTimeout(() => {
           setSuccessMessage(null);
         }, 5000);
+
+        // Clear form after successful creation
+        setTitle("");
+        setAuthor("");
+        setUrl("");
+        setLikes(0);
       } catch (error) {
-        setErrorMessage("Error Occured During Blog Creation!");
+        const errorMessage = extractErrorMessage(
+          error,
+          "Failed to create blog"
+        );
+        setErrorMessageWrapper(errorMessage);
         setTimeout(() => {
-          setErrorMessage(null);
+          setErrorMessageWrapper(null);
         }, 5000);
-        console.log(error);
+
+        // Handle authentication errors
+        if (isAuthError(error)) {
+          handleLogout();
+        }
       }
     };
     return (
@@ -146,20 +157,34 @@ const App = () => {
       <h2>My Blog App</h2>
 
       <Notification
-        setErrorMessageWrapper={setErrorMessageWrapper}
+        errorMessage={errorMessage}
         successMessage={successMessage}
       />
-      {!user && <LoginFormComponent handleSetUser={handleSetUser} />}
+      {!user && (
+        <LoginFormComponent
+          setUserWrapper={setUserWrapper}
+          setErrorMessageWrapper={setErrorMessageWrapper}
+        />
+      )}
       {user && (
         <div>
           <button onClick={handleLogout}>Logout</button>
           <h2>Create New Blog</h2>
-          <BlogForm handleSetBlogs={handleSetBlogs} />
+          <BlogForm
+            handleSetBlogs={handleSetBlogs}
+            blogs={blogs}
+            setErrorMessageWrapper={setErrorMessageWrapper}
+          />
         </div>
       )}
 
       {blogs.map((blog) => (
-        <Blog handleSetBlogs={handleSetBlogs} key={blog.id} blog={blog} />
+        <Blog
+          handleSetBlogs={handleSetBlogs}
+          setErrorMessageWrapper={setErrorMessageWrapper}
+          key={blog.id}
+          blog={blog}
+        />
       ))}
     </div>
   );

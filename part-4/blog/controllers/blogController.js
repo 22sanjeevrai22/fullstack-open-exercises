@@ -69,6 +69,12 @@ blogRouter.put("/:id", userExtractor, async (req, res, next) => {
       { title, author, url, likes },
       { new: true, runValidators: true, context: "query" }
     );
+
+    await updatedBlog.populate({
+      path: "user",
+      select: "name username",
+    });
+
     if (updatedBlog) {
       res.json(updatedBlog);
     } else {

@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { login } from "../../services/authService";
+import { setToken } from "../../services/blogService";
+import { extractErrorMessage } from "../../utils/errorUtils";
 
-const LoginForm = ({ handleSetUser, setErrorMessageWrapper }) => {
+const LoginForm = ({ setUserWrapper, setErrorMessageWrapper }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
@@ -11,14 +13,16 @@ const LoginForm = ({ handleSetUser, setErrorMessageWrapper }) => {
       const user = await login({ username, password });
       console.log("userrr in login form", user);
       window.localStorage.setItem("blogUserInfo", JSON.stringify(user));
-      handleSetUser(user);
+      setToken(user.token);
+      setUserWrapper(user);
       setUsername("");
       setPassword("");
     } catch (error) {
-      setErrorMessageWrapper("Wrong credentials");
+      const errorMessage = extractErrorMessage(error, "Failed to log in");
+      setErrorMessageWrapper(errorMessage);
       setTimeout(() => {
         setErrorMessageWrapper(null);
-      }, 5000);
+      }, 3000);
     }
   };
   return (

@@ -7,30 +7,48 @@ const setToken = (newToken) => {
   token = `Bearer ${newToken}`;
 };
 
-const getAll = () => {
-  const response = axios.get(baseUrl);
-  return response.then((blogs) => blogs.data);
+const getAll = async () => {
+  try {
+    const response = await axios.get(baseUrl);
+    return response.data;
+  } catch (error) {
+    console.log("Error fetching blogs:", error.response?.data);
+    throw error;
+  }
 };
 
-const create = (title, author, url, likes) => {
-  console.log("In blog create frontend", token);
-  const config = {
-    headers: { Authorization: token },
-  };
-  const response = axios.post(baseUrl, { title, author, url, likes }, config);
+const create = async (title, author, url, likes) => {
+  try {
+    console.log("In blog create frontend", token);
 
-  const createdBlog = response.then((blog) => blog.data);
-  return createdBlog;
+    const config = {
+      headers: { Authorization: token },
+    };
+
+    const response = await axios.post(
+      baseUrl,
+      { title, author, url, likes },
+      config
+    );
+
+    return response.data;
+  } catch (error) {
+    console.log("Error creating blog:", error.response?.data);
+    throw error;
+  }
 };
 
-const update = (id, newBlog) => {
-  const config = {
-    headers: { Authorization: token },
-  };
-  const respnose = axios.put(`${baseUrl}/${id}`, newBlog, config);
-  return respnose
-    .then((updatedBlog) => updatedBlog.data)
-    .catch((err) => console.log("Error Updating Data", err));
+const update = async (id, newBlog) => {
+  try {
+    const config = {
+      headers: { Authorization: token },
+    };
+    const response = await axios.put(`${baseUrl}/${id}`, newBlog, config);
+    return response.data;
+  } catch (error) {
+    console.log("Error updating blog:", error.response?.data);
+    throw error;
+  }
 };
 
 export { getAll, create, setToken, update };
