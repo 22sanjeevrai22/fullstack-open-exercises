@@ -11,8 +11,7 @@ const App = () => {
   const [user, setUser] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
-
-  //A wrapper for setUser setter
+  const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes);
 
   useEffect(() => {
     getAll()
@@ -35,6 +34,7 @@ const App = () => {
     }
   }, []);
 
+  //Wrapper for setter function
   const setUserWrapper = (inputUser) => {
     setUser(inputUser);
   };
@@ -189,7 +189,7 @@ const App = () => {
         </div>
       )}
 
-      {blogs.map((blog) => (
+      {sortedBlogs.map((blog) => (
         <Blog
           handleSetBlogs={handleSetBlogs}
           setErrorMessageWrapper={setErrorMessageWrapper}
