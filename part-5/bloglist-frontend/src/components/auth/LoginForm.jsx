@@ -3,7 +3,11 @@ import { login } from "../../services/authService";
 import { setToken } from "../../services/blogService";
 import { extractErrorMessage } from "../../utils/errorUtils";
 
-const LoginForm = ({ setUserWrapper, setErrorMessageWrapper }) => {
+const LoginForm = ({
+  setUserWrapper,
+  setErrorMessageWrapper,
+  setSuccessMessageWrapper,
+}) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
@@ -17,12 +21,17 @@ const LoginForm = ({ setUserWrapper, setErrorMessageWrapper }) => {
       setUserWrapper(user);
       setUsername("");
       setPassword("");
+
+      setSuccessMessageWrapper("Login Successful by", user.username);
+      setTimeout(() => {
+        setSuccessMessageWrapper(null);
+      }, 5000);
     } catch (error) {
       const errorMessage = extractErrorMessage(error, "Failed to log in");
       setErrorMessageWrapper(errorMessage);
       setTimeout(() => {
         setErrorMessageWrapper(null);
-      }, 3000);
+      }, 5000);
     }
   };
   return (

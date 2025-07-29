@@ -43,6 +43,10 @@ const App = () => {
     setErrorMessage(err);
   };
 
+  const setSuccessMessageWrapper = (success) => {
+    setSuccessMessage(success);
+  };
+
   const handleSetBlogs = (newBlog) => {
     setBlogs(newBlog);
   };
@@ -51,14 +55,20 @@ const App = () => {
     window.localStorage.removeItem("blogUserInfo");
     setUser(null);
     setToken(null);
+    setSuccessMessage("User Logged Out");
   };
 
-  const LoginFormComponent = ({ setUserWrapper, setErrorMessageWrapper }) => {
+  const LoginFormComponent = ({
+    setUserWrapper,
+    setErrorMessageWrapper,
+    setSuccessMessageWrapper,
+  }) => {
     return (
       <Togglable buttonLabel="Add New Note">
         <LoginForm
           setUserWrapper={setUserWrapper}
           setErrorMessageWrapper={setErrorMessageWrapper}
+          setSuccessMessageWrapper={setSuccessMessageWrapper}
         />
       </Togglable>
     );
@@ -164,6 +174,7 @@ const App = () => {
         <LoginFormComponent
           setUserWrapper={setUserWrapper}
           setErrorMessageWrapper={setErrorMessageWrapper}
+          setSuccessMessageWrapper={setSuccessMessageWrapper}
         />
       )}
       {user && (
