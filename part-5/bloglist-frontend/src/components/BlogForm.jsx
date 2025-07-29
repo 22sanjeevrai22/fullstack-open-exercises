@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { create } from "../services/blogService";
+import PropTypes from "prop-types";
 
-const BlogForm = ({ handleSetBlogs, blogs, setErrorMessageWrapper }) => {
+const BlogForm = ({ setBlogsWrapper, blogs, setErrorMessageWrapper }) => {
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [url, setUrl] = useState("");
@@ -10,7 +12,7 @@ const BlogForm = ({ handleSetBlogs, blogs, setErrorMessageWrapper }) => {
     e.preventDefault();
     try {
       const createdBlog = await create(title, author, url, likes);
-      handleSetBlogs([...blogs, createdBlog]);
+      setBlogsWrapper([...blogs, createdBlog]);
 
       setSuccessMessage(
         `A new blog ${createdBlog.title} by ${createdBlog.author} added`
@@ -85,6 +87,12 @@ const BlogForm = ({ handleSetBlogs, blogs, setErrorMessageWrapper }) => {
       </form>
     </>
   );
+};
+
+BlogForm.PropTypes = {
+  setBlogsWrapper: PropTypes.func.isRequired,
+  blogs: PropTypes.array.isRequired,
+  setErrorMessageWrapper: PropTypes.func.isRequired,
 };
 
 export default BlogForm;

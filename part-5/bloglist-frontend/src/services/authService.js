@@ -1,20 +1,20 @@
-import axios from "axios";
+import axios from 'axios'
 
-const baseUrl = "/api/auth";
+const baseUrl = '/api/auth'
 
 const login = async ({ username, password }) => {
   try {
     const response = await axios.post(`${baseUrl}/login`, {
       username,
       password,
-    });
-    console.log("response.data", response.data);
-    return response.data;
+    })
+    console.log('response.data', response.data)
+    return response.data
   } catch (error) {
-    console.log("Error Logging in User", error.response.data);
-    throw error;
+    console.log('Error Logging in User', error.response.data)
+    throw error
   }
-};
+}
 
 const register = async ({ username, password, confirmPassword }) => {
   try {
@@ -22,12 +22,12 @@ const register = async ({ username, password, confirmPassword }) => {
       username,
       password,
       confirmPassword,
-    });
-    return response.data;
+    })
+    return response.data
   } catch (error) {
-    console.log("Error Registering User", error.response?.data);
-    throw error;
+    console.log('Error Registering User', error.response?.data)
+    throw error
   }
-};
+}
 
-export { login, register };
+export { login, register }

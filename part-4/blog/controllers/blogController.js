@@ -103,6 +103,8 @@ blogRouter.delete("/:id", userExtractor, async (req, res, next) => {
     const deletedBlog = await Blog.findByIdAndDelete(blogId);
 
     if (deletedBlog) {
+      console.log("Deleted Blog in Blog Controller", deletedBlog);
+      res.status(200).json(deletedBlog);
       res.status(204).end();
     } else {
       res.status(404).json({ error: "Blog not found" });
