@@ -42,7 +42,7 @@ notesRouter.post("/", async (req, res, next) => {
 
     const note = new Note({
       content: body.content,
-      correct: body.correct || false,
+      important: body.important || false,
       user: user._id,
     });
 
@@ -73,11 +73,11 @@ notesRouter.get("/:id", (req, res, next) => {
 //PUT req to update a note
 notesRouter.put("/:id", (req, res, next) => {
   const id = req.params.id;
-  const { content, correct } = req.body;
+  const { content, important } = req.body;
 
   Note.findByIdAndUpdate(
     id,
-    { content, correct },
+    { content, important },
     { new: true, runValidators: true, context: "query" }
   )
     .then((updatedNote) => {

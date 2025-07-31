@@ -7,7 +7,7 @@ usersRouter.get("/", async (req, res, next) => {
     console.log("userRouter getAll");
     const users = await User.find({}).populate("notes", {
       content: 1,
-      correct: 1,
+      important: 1,
     });
     console.log("userRouter fetched", users);
 

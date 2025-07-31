@@ -1,62 +1,62 @@
-import Blog from './components/Blog'
-import Notification from './components/Notification'
-import { getAll, setToken, create } from './services/blogService'
-import Togglable from './components/Togglable'
-import LoginForm from './components/auth/LoginForm'
-import { useEffect, useState } from 'react'
-import { extractErrorMessage, isAuthError } from './utils/errorUtils'
+import Blog from "./components/Blog";
+import Notification from "./components/Notification";
+import { getAll, setToken, create } from "./services/blogService";
+import Togglable from "./components/Togglable";
+import LoginForm from "./components/auth/LoginForm";
+import { useEffect, useState } from "react";
+import { extractErrorMessage, isAuthError } from "./utils/errorUtils";
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
-  const [user, setUser] = useState(null)
-  const [errorMessage, setErrorMessage] = useState(null)
-  const [successMessage, setSuccessMessage] = useState(null)
-  const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes)
+  const [blogs, setBlogs] = useState([]);
+  const [user, setUser] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
+  const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes);
 
   useEffect(() => {
     getAll()
       .then((blogs) => {
-        setBlogs(blogs)
+        setBlogs(blogs);
       })
       .catch((error) => {
-        const message = extractErrorMessage(error, 'Failed to load blogs')
-        setErrorMessage(message)
-        setTimeout(() => setErrorMessage(null), 5000)
-      })
-  }, [])
+        const message = extractErrorMessage(error, "Failed to load blogs");
+        setErrorMessage(message);
+        setTimeout(() => setErrorMessage(null), 5000);
+      });
+  }, []);
 
   useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem('blogUserInfo')
-    if (loggedUserJSON && loggedUserJSON !== 'undefined') {
-      const user = JSON.parse(loggedUserJSON)
-      setUser(user)
-      setToken(user.token)
+    const loggedUserJSON = window.localStorage.getItem("blogUserInfo");
+    if (loggedUserJSON && loggedUserJSON !== "undefined") {
+      const user = JSON.parse(loggedUserJSON);
+      setUser(user);
+      setToken(user.token);
     }
-  }, [])
+  }, []);
 
   //Wrapper for setter function
   const setUserWrapper = (inputUser) => {
-    setUser(inputUser)
-  }
+    setUser(inputUser);
+  };
 
   const setErrorMessageWrapper = (err) => {
-    setErrorMessage(err)
-  }
+    setErrorMessage(err);
+  };
 
   const setSuccessMessageWrapper = (success) => {
-    setSuccessMessage(success)
-  }
+    setSuccessMessage(success);
+  };
 
   const setBlogsWrapper = (callBackFn) => {
-    setBlogs(callBackFn)
-  }
+    setBlogs(callBackFn);
+  };
 
   const handleLogout = () => {
-    window.localStorage.removeItem('blogUserInfo')
-    setUser(null)
-    setToken(null)
-    setSuccessMessage('User Logged Out')
-  }
+    window.localStorage.removeItem("blogUserInfo");
+    setUser(null);
+    setToken(null);
+    setSuccessMessage("User Logged Out");
+  };
 
   const LoginFormComponent = ({
     setUserWrapper,
@@ -71,48 +71,48 @@ const App = () => {
           setSuccessMessageWrapper={setSuccessMessageWrapper}
         />
       </Togglable>
-    )
-  }
+    );
+  };
 
   const BlogForm = ({ setBlogsWrapper, blogs, setErrorMessageWrapper }) => {
-    const [title, setTitle] = useState('')
-    const [author, setAuthor] = useState('')
-    const [url, setUrl] = useState('')
-    const [likes, setLikes] = useState(0)
+    const [title, setTitle] = useState("");
+    const [author, setAuthor] = useState("");
+    const [url, setUrl] = useState("");
+    const [likes, setLikes] = useState(0);
 
     const addBlog = async (e) => {
-      e.preventDefault()
+      e.preventDefault();
       try {
-        const createdBlog = await create(title, author, url, likes)
-        setBlogsWrapper([...blogs, createdBlog])
+        const createdBlog = await create(title, author, url, likes);
+        setBlogsWrapper([...blogs, createdBlog]);
         setSuccessMessage(
           `A new blog ${createdBlog.title} by ${createdBlog.author} added`
-        )
+        );
         setTimeout(() => {
-          setSuccessMessage(null)
-        }, 5000)
+          setSuccessMessage(null);
+        }, 5000);
 
         // Clear form after successful creation
-        setTitle('')
-        setAuthor('')
-        setUrl('')
-        setLikes(0)
+        setTitle("");
+        setAuthor("");
+        setUrl("");
+        setLikes(0);
       } catch (error) {
         const errorMessage = extractErrorMessage(
           error,
-          'Failed to create blog'
-        )
-        setErrorMessageWrapper(errorMessage)
+          "Failed to create blog"
+        );
+        setErrorMessageWrapper(errorMessage);
         setTimeout(() => {
-          setErrorMessageWrapper(null)
-        }, 5000)
+          setErrorMessageWrapper(null);
+        }, 5000);
 
         // Handle authentication errors
         if (isAuthError(error)) {
-          handleLogout()
+          handleLogout();
         }
       }
-    }
+    };
     return (
       <>
         <form onSubmit={addBlog}>
@@ -159,8 +159,8 @@ const App = () => {
           <button type="submit">Create</button>
         </form>
       </>
-    )
-  }
+    );
+  };
 
   return (
     <div>
@@ -198,7 +198,7 @@ const App = () => {
         />
       ))}
     </div>
-  )
-}
+  );
+};
 
-export default App
+export default App;
