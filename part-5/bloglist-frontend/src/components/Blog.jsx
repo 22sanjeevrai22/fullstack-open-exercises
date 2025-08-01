@@ -94,7 +94,9 @@ const Blog = ({ blog, setBlogsWrapper, setErrorMessageWrapper }) => {
         <>
           <h5 className="likes">
             Likes:{blog.likes}
-            <button onClick={handleClickLike}>like</button>
+            <button className="like-button" onClick={handleClickLike}>
+              like
+            </button>
           </h5>
           <h5 className="url">{blog.url}</h5>
           <h5>Blog created By: {blog.user.name || "Donald Trump"}</h5>
