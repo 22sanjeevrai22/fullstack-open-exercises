@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { create } from "../services/blogService";
 import PropTypes from "prop-types";
+import { extractErrorMessage, isAuthError } from "../utils/errorUtils";
 
 const BlogForm = ({ setBlogsWrapper, blogs, setErrorMessageWrapper }) => {
   const [title, setTitle] = useState("");
@@ -46,6 +47,7 @@ const BlogForm = ({ setBlogsWrapper, blogs, setErrorMessageWrapper }) => {
         <div>
           <label htmlFor="title">Title:</label>
           <input
+            id="input-title"
             type="text"
             name="title"
             placeholder="title"
@@ -57,6 +59,7 @@ const BlogForm = ({ setBlogsWrapper, blogs, setErrorMessageWrapper }) => {
           <label htmlFor="author">Author:</label>
           <input
             type="text"
+            id="input-author"
             name="author"
             placeholder="author"
             value={author}
@@ -67,6 +70,7 @@ const BlogForm = ({ setBlogsWrapper, blogs, setErrorMessageWrapper }) => {
           <label htmlFor="url">Url:</label>
           <input
             type="text"
+            id="input-url"
             name="url"
             placeholder="url"
             value={url}
@@ -83,7 +87,9 @@ const BlogForm = ({ setBlogsWrapper, blogs, setErrorMessageWrapper }) => {
             onChange={(e) => setLikes(e.target.value)}
           />
         </div>
-        <button type="submit">Create</button>
+        <button className="submit-button" type="submit">
+          Submit
+        </button>
       </form>
     </>
   );
