@@ -15,6 +15,7 @@ queryByText()         | Returns null instead of error (non-strict)  | Check abse
 queryByRole()         | Same as queryByText, but for roles           | Check button is gone after click
 findByText()          | Async variant, waits for element             | Fetch results or delayed loading
 findByRole()          | Async variant for role-based elements        | Waits for modal, alert, etc.
+querySelector(".note-item");
 
 🔁 Note: Every method above also has:
   - `getAllBy...` → when expecting multiple matches
