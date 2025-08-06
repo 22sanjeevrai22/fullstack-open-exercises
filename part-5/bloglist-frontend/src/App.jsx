@@ -27,10 +27,18 @@ const App = () => {
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem("blogUserInfo");
-    if (loggedUserJSON && loggedUserJSON !== "undefined") {
-      const user = JSON.parse(loggedUserJSON);
-      setUser(user);
-      setToken(user.token);
+
+    try {
+      if (loggedUserJSON) {
+        const parsed = JSON.parse(loggedUserJSON);
+        if (parsed && parsed.token) {
+          setUser(parsed);
+          setToken(parsed.token);
+        }
+      }
+    } catch (err) {
+      console.warn("Invalid JSON in blogUserInfo:", loggedUserJSON);
+      localStorage.removeItem("blogUserInfo"); // clear corrupted data
     }
   }, []);
 

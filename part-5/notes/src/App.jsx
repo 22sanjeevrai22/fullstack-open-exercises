@@ -106,7 +106,7 @@ const App = () => {
 
   return (
     <div className="app-container">
-      <h1>My Note App</h1>
+      <h1>My Notes App</h1>
       <Notification message={errorMessage} />
 
       <h2>Login</h2>

@@ -7,7 +7,8 @@
     "dev": "cross-env NODE_ENV=dev nodemon index.js",
     "prod": "cross-env NODE_ENV=prod node index.js",
     "lint": "eslint index.js",
-    "lint:watch": "chokidar './**/*.js' -c 'eslint .'"
+    "lint:watch": "chokidar './**/*.js' -c 'eslint .'",
+    "start:test": "cross-env NODE_ENV=test nodemon index.js"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
