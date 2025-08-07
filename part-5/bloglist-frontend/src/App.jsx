@@ -72,7 +72,7 @@ const App = () => {
     setSuccessMessageWrapper,
   }) => {
     return (
-      <Togglable buttonLabel="Add New Note">
+      <Togglable buttonLabel="Add New Blog">
         <LoginForm
           setUserWrapper={setUserWrapper}
           setErrorMessageWrapper={setErrorMessageWrapper}
