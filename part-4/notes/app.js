@@ -27,6 +27,12 @@ app.use(requestLogger);
 app.use("/api/auth", authController);
 app.use("/api/users", userController);
 app.use("/api/notes", notesController);
+
+if (process.env.NODE_ENV === "test") {
+  const testingRouter = require("./controllers/testing");
+  app.use("/api/testing", testingRouter);
+}
+
 app.use(unknownEndPoint);
 
 // this has to be the last loaded middleware,

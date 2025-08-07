@@ -12,7 +12,7 @@ const NoteForm = ({ createNote }) => {
 
     const noteObject = {
       content: newNote,
-      important: Math.random() > 0.5,
+      important: true,
     };
 
     createNote(noteObject);
