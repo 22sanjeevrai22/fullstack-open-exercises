@@ -23,3 +23,21 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+
+// Custom command to open login form
+Cypress.Commands.add("openLoginForm", () => {
+  cy.get("button").contains("Add New Blog").should("be.visible").click();
+  // Wait for form to be visible
+  cy.wait(1000);
+  cy.get('input[name="username"]').should("be.visible");
+  cy.get('input[name="password"]').should("be.visible");
+  cy.get("button").contains("Login").should("be.visible");
+});
+
+// Custom command to login
+Cypress.Commands.add("login", ({ username, password }) => {
+  cy.openLoginForm();
+  cy.get('input[name="username"]').should("be.visible").type(username);
+  cy.get('input[name="password"]').should("be.visible").type(password);
+  cy.get("button").contains("Login").should("be.visible").click();
+});
