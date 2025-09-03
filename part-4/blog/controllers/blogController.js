@@ -8,7 +8,7 @@ blogRouter.get("/", (req, res, next) => {
   Blog.find({})
     .populate("user", { username: 1, name: 1 })
     .then((blogs) => {
-      console.log("Blogs fetched from Database", blogs);
+      // console.log("Blogs fetched from Database", blogs);
       res.json(blogs);
     })
     .catch((err) => next(err));
@@ -29,7 +29,7 @@ blogRouter.post("/", userExtractor, async (req, res, next) => {
       author: newBlog.author,
       url: newBlog.url,
       likes: newBlog.likes,
-      user: user._id,
+      user: user._id || user.id,
     });
 
     const savedBlog = await blog.save();
@@ -69,6 +69,12 @@ blogRouter.put("/:id", userExtractor, async (req, res, next) => {
       { title, author, url, likes },
       { new: true, runValidators: true, context: "query" }
     );
+
+    await updatedBlog.populate({
+      path: "user",
+      select: "name username",
+    });
+
     if (updatedBlog) {
       res.json(updatedBlog);
     } else {
@@ -97,6 +103,8 @@ blogRouter.delete("/:id", userExtractor, async (req, res, next) => {
     const deletedBlog = await Blog.findByIdAndDelete(blogId);
 
     if (deletedBlog) {
+      console.log("Deleted Blog in Blog Controller", deletedBlog);
+      res.status(200).json(deletedBlog);
       res.status(204).end();
     } else {
       res.status(404).json({ error: "Blog not found" });

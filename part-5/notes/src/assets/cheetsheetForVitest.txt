@@ -1,0 +1,114 @@
+============================
+React Testing Library Queries (Extended)
+============================
+
+Method                 | What it Does                                | When to Use
+----------------------|----------------------------------------------|---------------------------------------------
+getByText()           | Finds element by visible text                | For static or dynamic visible text
+getByRole()           | Finds element by ARIA role                   | Buttons, headings, forms (preferred!)
+getByLabelText()      | Finds input by label text                    | Form testing, accessibility check
+getByPlaceholderText()| Finds input by its placeholder               | Minimal placeholder-based inputs
+getByDisplayValue()   | Finds input by current value                 | Check what user typed in
+getByAltText()        | Finds image or media by alt text             | Testing images for accessibility
+getByTitle()          | Finds element by title attribute             | Rare, for tooltips or semantic metadata
+queryByText()         | Returns null instead of error (non-strict)  | Check absence without throwing
+queryByRole()         | Same as queryByText, but for roles           | Check button is gone after click
+findByText()          | Async variant, waits for element             | Fetch results or delayed loading
+findByRole()          | Async variant for role-based elements        | Waits for modal, alert, etc.
+querySelector(".note-item");
+
+🔁 Note: Every method above also has:
+  - `getAllBy...` → when expecting multiple matches
+  - `queryAllBy...` → soft failure for multiple items
+  - `findAllBy...` → async + multiple matches
+
+============================
+Jest DOM Matchers (Assertions)
+============================
+
+Matcher                    | Meaning                                 | Example
+---------------------------|------------------------------------------|----------------------------------------------
+toBeInTheDocument()        | Element exists in the DOM                | expect(button).toBeInTheDocument()
+toBeVisible()              | Element is visible (not hidden)          | expect(modal).toBeVisible()
+toHaveTextContent(text)    | Exact or partial text                    | expect(h1).toHaveTextContent("Hello")
+toHaveAttribute(attr, val) | HTML attribute match                     | expect(input).toHaveAttribute("type", "email")
+toHaveClass("name")        | CSS class present                        | expect(div).toHaveClass("active")
+toBeDisabled()             | Disabled state                           | expect(button).toBeDisabled()
+toBeEnabled()              | Opposite of toBeDisabled                 | expect(button).toBeEnabled()
+toBeChecked()              | For checkbox/radio                       | expect(checkbox).toBeChecked()
+toBeEmptyDOMElement()      | No child elements inside                 | expect(container).toBeEmptyDOMElement()
+toHaveValue(value)         | Input’s value                            | expect(input).toHaveValue("sanjeev")
+toHaveFocus()              | Check if an element is focused           | expect(input).toHaveFocus()
+toContainElement(elem)     | Parent contains this child               | expect(div).toContainElement(span)
+toHaveFormValues()         | Matches form inputs and their values     | expect(form).toHaveFormValues({ name: "Sanj" })
+
+============================
+User Event Methods (Optional)
+============================
+
+Tool: userEvent (install separately for realistic user simulation)
+
+Method                  | What it Does                              | Example
+------------------------|--------------------------------------------|-----------------------------------------------
+userEvent.click(elem)   | Simulates real click                       | userEvent.click(screen.getByRole('button'))
+userEvent.type(elem, s) | Simulates typing input                     | userEvent.type(input, 'Sanjeev')
+userEvent.tab()         | Moves focus (accessibility test)           | userEvent.tab()
+userEvent.selectOptions(select, values)| Selects <option> value(s)  | userEvent.selectOptions(dropdown, 'Nepal')
+
+
+
+-----------------------------------------------------------------------
+
+==============================
+React Testing Library
+render(<Component />) Output
+==============================
+
+The `render()` function returns an object with the following keys:
+
+--------------------------------------------------------------------------
+| Property        | Type            | Description                         |
+--------------------------------------------------------------------------
+| container       | HTMLElement     | The DOM node that contains the rendered output (usually a <div>) |
+| baseElement     | HTMLElement     | The base DOM node used for queries (defaults to container) |
+| debug()         | Function        | Logs the current DOM tree to the console (for inspection) |
+| unmount()       | Function        | Unmounts the rendered component from the DOM |
+| rerender(ui)    | Function        | Re-renders the component with new JSX or props |
+| asFragment()    | Function        | Returns a DocumentFragment (for snapshot testing) |
+| ...query methods| Function        | Includes all queries like:                       |
+|                 |                 |   - getByText()                                  |
+|                 |                 |   - getByRole()                                  |
+|                 |                 |   - getByLabelText()                             |
+|                 |                 |   - queryByText(), queryByRole(), etc.           |
+|                 |                 |   - findByText(), findByRole(), etc.             |
+--------------------------------------------------------------------------
+
+Example:
+
+const result = render(<Component />);
+
+result.getByText("Submit");
+result.debug();
+result.container.innerHTML;
+result.rerender(<Component newProp={value} />);
+result.unmount();
+
+==============================
+Recommended Usage:
+==============================
+
+Instead of destructuring methods like this:
+
+const { getByText } = render(<Component />);
+getByText("Hello");
+
+You can use `screen`:
+
+render(<Component />);
+screen.getByText("Hello");
+
+This is preferred because:
+- It aligns with how users interact with the screen
+- It avoids needing to destructure
+- It simplifies test readability
+

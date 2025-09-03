@@ -3,11 +3,12 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "cross-env NODE_ENV=test jest --verbose",
     "dev": "cross-env NODE_ENV=dev nodemon index.js",
+    "test": "cross-env NODE_ENV=test jest --verbose",
     "prod": "cross-env NODE_ENV=prod node index.js",
     "lint": "eslint index.js",
-    "lint:watch": "chokidar './**/*.js' -c 'eslint .'"
+    "lint:watch": "chokidar './**/*.js' -c 'eslint .'",
+    "start:test": "cross-env NODE_ENV=test nodemon index.js"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",

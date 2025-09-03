@@ -29,6 +29,12 @@ app.use("/api/users", userController);
 app.use(tokenExtractor);
 app.use("/api/blogs", blogController);
 
+// Add testing routes in test and development environment
+if (process.env.NODE_ENV === "test") {
+  const testingRouter = require("./controllers/testing");
+  app.use("/api/testing", testingRouter);
+}
+
 app.use(unknownEndPoint);
 
 app.use(errorHandler);

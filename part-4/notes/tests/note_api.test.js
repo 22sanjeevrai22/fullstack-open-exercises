@@ -46,7 +46,7 @@ describe("Testing the POST method", () => {
     const newNote = {
       content:
         "BUser id of the note creator is at the start sent along the request.",
-      correct: true,
+      important: true,
       user: "68628ea1dea317078f613c72",
     };
 
