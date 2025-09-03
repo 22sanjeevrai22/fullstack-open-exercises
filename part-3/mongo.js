@@ -2,17 +2,13 @@ const express = require("express");
 const morgan = require("morgan");
 const mongoose = require("mongoose");
 const cors = require("cors");
-
 const app = express();
-
 // Define schema and model
 const phonebookSchema = new mongoose.Schema({
   name: String,
   number: Number,
 });
-
 const PhoneBook = mongoose.model("PhoneBook", phonebookSchema);
-
 // --- CLI mode ---
 if (require.main === module) {
   if (process.argv.length < 3) {

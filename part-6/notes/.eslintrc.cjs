@@ -16,10 +16,9 @@ module.exports = {
   settings: { react: { version: "18.2" } },
   plugins: ["react-refresh"],
   rules: {
-    indent: ["error", 2],
-    "linebreak-style": ["error", "unix"],
-    quotes: ["error", "single"],
-    semi: ["error", "never"],
+    "linebreak-style": ["error", "windows"],
+    quotes: ["error", "double"],
+    semi: ["error", "always"],
     eqeqeq: "error",
     "no-trailing-spaces": "error",
     "object-curly-spacing": ["error", "always"],
@@ -27,6 +26,6 @@ module.exports = {
     "no-console": 0,
     "react/react-in-jsx-scope": "off",
     "react/prop-types": 0,
-    "no-unused-vars": 0,
+    "no-unused-vars": "warn",
   },
 };

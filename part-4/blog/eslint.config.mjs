@@ -35,4 +35,8 @@ export default defineConfig([
       },
     },
   },
+  {
+    ignores: ['dist'],
+    files: ["**/*.test.{js,mjs,cjs}"],
+  },
 ]);
