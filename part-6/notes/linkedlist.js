@@ -18,6 +18,12 @@ class LinkedList {
 
   insertAtLast(value) {
     const newNode = new Node(value);
+
+    if (!this.head) {
+      this.head = newNode;
+      return;
+    }
+
     let curr = this.head;
     while (curr.next) {
       curr = curr.next;
@@ -35,7 +41,7 @@ class LinkedList {
 
     let curr = this.head;
     let count = 0;
-    while (count < index) {
+    while (curr && count < index - 1) {
       curr = curr.next;
       count++;
     }
@@ -53,6 +59,41 @@ class LinkedList {
     }
     return result;
   }
+
+  deleteAtLast() {
+    if (!this.head) return null;
+    if (!this.head.next) {
+      this.head = null;
+      return;
+    }
+
+    let curr = this.head;
+    while (curr.next && curr.next.next) {
+      curr = curr.next;
+    }
+    curr.next = null;
+  }
+
+  deleteAtPosition(index) {
+    let curr = this.head;
+    let count = 0;
+
+    if (!this.head) return null; // empty list
+    if (index === 0) {
+      this.head = curr.next;
+      return;
+    }
+
+    while (curr && count < index - 1) {
+      count++;
+      curr = curr.next;
+    }
+
+    // if index is out of bounds (curr is null or no node to delete)
+    if (!curr || !curr.next) return null;
+
+    curr.next = curr.next.next;
+  }
 }
 
 const list = new LinkedList();
@@ -62,6 +103,9 @@ list.insertAtFront(30);
 list.insertAtFront(900);
 list.insertAtFront(13);
 list.insertAtFront(30);
+list.deleteAtPosition(2);
+// list.insertAtPosition(111, 3);
+// list.deleteAtLast();
 console.log(list.printList() + "null"); // Output: 30 -> 20 -> 10 -> null
 
 // function insertAtFront(head, value) {

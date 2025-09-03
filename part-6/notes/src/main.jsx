@@ -1,52 +1,58 @@
 import { useState } from "react";
 import ReactDOM from "react-dom/client";
-import { createStore } from "redux";
+import { combineReducers, createStore } from "redux";
+import notesReducer from "../reducers/noteReducer";
 // import App from './App'
 
 const container = document.getElementById("root");
 const root = ReactDOM.createRoot(container);
 
-const countReducer = (state = 10, action) => {
-  //Some Logic Here
-  // console.log("state is", state);
-  // console.log("action is", action);
+const rootReducer = combineReducers({
+  notes: notesReducer,
+});
 
-  if (action.type === "INCREMENT") {
-    return state + 1;
-  } else if (action.type === "DECREMENT") {
-    return state - 1;
-  } else if (action.type === "RESET") {
-    return 0;
-  }
-  return state;
+const store = createStore(rootReducer);
+
+const addNote = () => {
+  store.dispatch({
+    type: "NEW_NOTE",
+    payload: {
+      content: "Brother brother yes papa, eating sugar no papa?",
+      important: true,
+      id: 2,
+    },
+  });
 };
 
-const store = createStore(countReducer);
+const toggleImportant = (id) => {
+  store.dispatch({
+    type: "TOGGLE",
+    payload: {
+      id: id,
+    },
+  });
+};
 
 const App = () => {
-  const handleIncrease = () => {
-    store.dispatch({ type: "INCREMENT" });
-  };
-
-  const handleDecrease = () => {
-    store.dispatch({ type: "DECREMENT" });
-  };
-
-  const handleReset = () => {
-    store.dispatch({ type: "RESET" });
-  };
-
+  const { notes } = store.getState();
   return (
-    <div>
-      <div>Count:{store.getState()}</div>
+    <>
       <div>
-        <button onClick={handleDecrease}>Decrease</button>
-        <button onClick={handleIncrease}>Increase</button>
+        <h1>Notes App with reducer</h1>
+        <button onClick={addNote}>Click</button>
+        <div>
+          {notes.map((note, index) => (
+            <h3 key={index}>
+              {note.content}
+              <span>{note.important ? "Important" : "Not Important"}</span>
+              <button onClick={() => toggleImportant(note.id)}>
+                Toggle Important
+              </button>
+            </h3>
+          ))}
+        </div>
       </div>
-      <div>
-        <button onClick={handleReset}>Reset</button>
-      </div>
-    </div>
+    </>
   );
 };
 
