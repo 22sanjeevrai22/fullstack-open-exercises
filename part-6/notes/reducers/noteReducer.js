@@ -14,7 +14,7 @@ const initialState = [
 const notesReducer = (state = initialState, action) => {
   if (action.type === "NEW_NOTE") {
     return [...state, action.payload];
-  } else if (action.type === "TOGGLE") {
+  } else if (action.type === "TOGGLE_IMPORTANCE") {
     const id = action.payload.id;
 
     let newNotes = state.map((note, index) => {

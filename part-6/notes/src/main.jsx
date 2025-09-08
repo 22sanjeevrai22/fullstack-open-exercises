@@ -7,45 +7,62 @@ import notesReducer from "../reducers/noteReducer";
 const container = document.getElementById("root");
 const root = ReactDOM.createRoot(container);
 
+const generateId = () => Number((Math.random() * 1000000).toFixed(0));
+
 const rootReducer = combineReducers({
   notes: notesReducer,
 });
 
 const store = createStore(rootReducer);
 
-const addNote = () => {
-  store.dispatch({
-    type: "NEW_NOTE",
-    payload: {
-      content: "Brother brother yes papa, eating sugar no papa?",
-      important: true,
-      id: 2,
-    },
-  });
-};
-
-const toggleImportant = (id) => {
-  store.dispatch({
-    type: "TOGGLE",
-    payload: {
-      id: id,
-    },
-  });
-};
-
 const App = () => {
-  const { notes } = store.getState();
+  const addNote = (event) => {
+    event.preventDefault();
+    const content = event.target.note.value;
+    event.target.note.value = "";
+    store.dispatch({
+      type: "NEW_NOTE",
+      payload: {
+        content,
+        important: false,
+        id: generateId(),
+      },
+    });
+  };
+
+  //action creators
+  const createNote = (content) => {
+    return {
+      type: "NEW_NOTE",
+      payload: {
+        content,
+        important: false,
+        id: generateId(),
+      },
+    };
+  };
+
+  const toggleImportance = (id) => {
+    store.dispatch({
+      type: "TOGGLE_IMPORTANCE",
+      payload: { id },
+    });
+  };
+
   return (
     <>
       <div>
         <h1>Notes App with reducer</h1>
-        <button onClick={addNote}>Click</button>
+        <form onSubmit={addNote}>
+          <input name="note" />
+          <button type="submit">add</button>
+        </form>
         <div>
-          {notes.map((note, index) => (
+          {store.getState().notes.map((note, index) => (
             <h3 key={index}>
-              {note.content}
+              {note.content}__
               <span>{note.important ? "Important" : "Not Important"}</span>
-              <button onClick={() => toggleImportant(note.id)}>
+              <button onClick={() => toggleImportance(note.id)}>
                 Toggle Important
               </button>
             </h3>
