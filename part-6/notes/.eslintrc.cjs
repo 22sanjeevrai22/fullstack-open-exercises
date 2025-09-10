@@ -10,11 +10,13 @@ module.exports = {
     "plugin:react/jsx-runtime",
     "plugin:react-hooks/recommended",
     "plugin:vitest-globals/recommended",
+    "plugin:jsx-a11y/recommended",
+    "plugin:prettier/recommended",
   ],
   ignorePatterns: ["dist", ".eslintrc.cjs"],
   parserOptions: { ecmaVersion: "latest", sourceType: "module" },
   settings: { react: { version: "18.2" } },
-  plugins: ["react-refresh"],
+  plugins: ["react", "react-hooks", "jsx-a11y"],
   rules: {
     indent: ["error", 2],
     "linebreak-style": ["error", "windows"],
@@ -26,13 +28,9 @@ module.exports = {
     "arrow-spacing": ["error", { before: true, after: true }],
     "no-console": 0,
     "react/react-in-jsx-scope": "off",
-    "react/prop-types": 0,
     "no-unused-vars": 0,
-  },{
-    //I want global variables to be recognized in test files
-    files: ["**/*.test.js"],
-    env: {
-      vitest: true,
-    },
-  }
+    "react/prop-types": "off", // if not using prop-types
+    "react/react-in-jsx-scope": "off",
+    // "jest/globals": true
+  },
 };
