@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { toggleImportanceOf } from "../../reducers/noteReducer";
-
+let unused = 0;
 const Note = ({ note, handleClick }) => {
   return (
     <h3 key={note.id}>

@@ -1,22 +1,18 @@
 module.exports = {
   root: true,
-  env: {
-    browser: true,
-    es2020: true,
-  },
+  env: { browser: true, es2020: true },
   extends: [
     "eslint:recommended",
     "plugin:react/recommended",
     "plugin:react/jsx-runtime",
-    "plugin:vitest-globals/recommended",
+    "plugin:react-hooks/recommended",
   ],
   ignorePatterns: ["dist", ".eslintrc.cjs"],
   parserOptions: { ecmaVersion: "latest", sourceType: "module" },
   settings: { react: { version: "18.2" } },
-  // plugins: ["react", "react-hooks", "jsx-a11y"],
   plugins: ["react-refresh"],
   rules: {
-    indent: ["error", 2],
+    // indent: ["error", 2],
     "linebreak-style": ["error", "windows"],
     quotes: ["error", "double"],
     semi: ["error", "always"],
@@ -25,11 +21,5 @@ module.exports = {
       "warn",
       { allowConstantExport: true },
     ],
-    "no-trailing-spaces": "error",
-    "object-curly-spacing": ["error", "always"],
-    "arrow-spacing": ["error", { before: true, after: true }],
-    "no-console": 0,
-    "react/react-in-jsx-scope": "off",
-    // "jest/globals": true
   },
 };
