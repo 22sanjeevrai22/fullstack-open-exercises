@@ -1,20 +1,16 @@
-const searchReducer = (state = "", action) => {
-  const { type, payload } = action;
-  switch (type) {
-    case "SET_SEARCH": {
-      return payload;
-    }
-    default:
-      return state;
-  }
-};
+import { createSlice } from "@reduxjs/toolkit";
 
-const setSearch = (value) => {
-  return {
-    type: "SET_SEARCH",
-    payload: value,
-  };
-};
+const searchSlice = createSlice({
+  name: "search",
+  initialState: "",
+  reducers: {
+    setSearch(state, action) {
+      return action.payload;
+    },
+  },
+});
 
-export { setSearch };
-export default searchReducer;
+console.log("this is searchslice", searchSlice);
+
+export default searchSlice.reducer;
+export const { setSearch } = searchSlice.actions;

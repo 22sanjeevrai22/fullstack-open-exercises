@@ -1,3 +1,4 @@
+import { createSlice, current } from "@reduxjs/toolkit";
 const initialState = [
   {
     content: "the app state is in redux store",
@@ -13,43 +14,32 @@ const initialState = [
 
 const generateId = () => Number((Math.random() * 1000000).toFixed(0));
 
-const notesReducer = (state = initialState, action) => {
-  if (action.type === "NEW_NOTE") {
-    return [...state, action.payload];
-  } else if (action.type === "TOGGLE_IMPORTANCE") {
-    const id = action.payload.id;
-
-    let newNotes = state.map((note) => {
-      if (note.id !== id) {
-        return note;
-      } else {
-        return { ...note, important: !note.important };
-      }
-    });
-
-    return newNotes;
-  } else {
-    return state;
-  }
-};
-
-//action creators
-const createNote = (content) => {
-  return {
-    type: "NEW_NOTE",
-    payload: {
-      id: generateId(),
-      content,
-      important: false,
+const noteSlice = createSlice({
+  name: "notes",
+  initialState,
+  reducers: {
+    createNote(state, action) {
+      const content = action.payload;
+      state.push({
+        content,
+        important: false,
+        id: generateId(),
+      });
     },
-  };
-};
 
-const toggleImportanceOf = (id) => {
-  return {
-    type: "TOGGLE_IMPORTANCE",
-    payload: { id },
-  };
-};
+    toggleImportanceOf(state, action) {
+      const id = action.payload;
+      const noteToChange = state.find((n) => n.id === id);
+      const changedNote = {
+        ...noteToChange,
+        important: !noteToChange.important,
+      };
 
-export { notesReducer, createNote, toggleImportanceOf };
+      console.log(current(state));
+
+      return state.map((note) => (note.id !== id ? note : changedNote));
+    },
+  },
+});
+export const { createNote, toggleImportanceOf } = noteSlice.actions;
+export default noteSlice.reducer;
