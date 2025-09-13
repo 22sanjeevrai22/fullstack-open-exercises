@@ -4,7 +4,7 @@ import { increaseVote } from "../reducers/anecdoteReducer";
 const Anecdote = ({ anec, onClick }) => {
   return (
     <>
-      <div key={anec.id}>
+      <div>
         <div>{anec.content}</div>
         <div>
           has {anec.votes}
@@ -20,11 +20,9 @@ const Anecdotes = () => {
   const anecdotes = useSelector((state) => state.anecdotes); //equivalent to state
   const searchInput = useSelector((state) => state.search);
   const filteredAnecdotes = anecdotes.filter((anec) =>
-    anec.content.includes(searchInput)
+    anec.content.toLowerCase().includes(searchInput.toLowerCase())
   );
-  const sortedAnecdotes = [...filteredAnecdotes].sort(
-    (a, b) => b.votes - a.votes
-  );
+  const sortedAnecdotes = filteredAnecdotes.sort((a, b) => b.votes - a.votes);
 
   return (
     <>
