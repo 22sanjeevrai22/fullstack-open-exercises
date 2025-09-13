@@ -17,9 +17,14 @@ const Anecdote = ({ anec, onClick }) => {
 
 const Anecdotes = () => {
   const dispatch = useDispatch(); // like setState
-  const anecdotes = useSelector((state) => state); //equivalent to state
-
-  const sortedAnecdotes = [...anecdotes].sort((a, b) => b.votes - a.votes);
+  const anecdotes = useSelector((state) => state.anecdotes); //equivalent to state
+  const searchInput = useSelector((state) => state.search);
+  const filteredAnecdotes = anecdotes.filter((anec) =>
+    anec.content.includes(searchInput)
+  );
+  const sortedAnecdotes = [...filteredAnecdotes].sort(
+    (a, b) => b.votes - a.votes
+  );
 
   return (
     <>

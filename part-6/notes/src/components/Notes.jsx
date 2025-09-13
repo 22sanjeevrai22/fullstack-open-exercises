@@ -16,8 +16,13 @@ const Notes = () => {
   const dispatch = useDispatch();
 
   //like state
-  const notes = useSelector((state) => {
-    return state.notes;
+  const notes = useSelector(({ filter, notes }) => {
+    if (filter === "ALL") {
+      return notes;
+    }
+    return filter === "IMPORTANT"
+      ? notes.filter((note) => note.important)
+      : notes.filter((note) => !note.important);
   });
 
   return (
