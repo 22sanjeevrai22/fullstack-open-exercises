@@ -1,9 +1,6 @@
 import { useSelector, useDispatch } from "react-redux";
-import { increaseVote } from "../reducers/anecdoteReducer";
-import {
-  clearNotification,
-  setNotification,
-} from "../reducers/notificationReducer";
+import { voteAnecdoteThunk } from "../reducers/anecdoteReducer";
+import { setNotificationThunk } from "../reducers/notificationReducer";
 
 const Anecdote = ({ anec, onClick }) => {
   return (
@@ -22,6 +19,7 @@ const Anecdote = ({ anec, onClick }) => {
 const Anecdotes = () => {
   const dispatch = useDispatch(); // like setState
   const anecdotes = useSelector((state) => state.anecdotes); //equivalent to state
+  console.log("anecc", anecdotes);
   const searchInput = useSelector((state) => state.search);
   const filteredAnecdotes = anecdotes.filter((anec) =>
     anec.content.toLowerCase().includes(searchInput.toLowerCase())
@@ -32,11 +30,8 @@ const Anecdotes = () => {
 
   const handleVoteClick = (anec) => {
     let message = `You voted '${anec.content}'`;
-    dispatch(increaseVote(anec.id));
-    dispatch(setNotification(message));
-    setTimeout(() => {
-      dispatch(clearNotification());
-    }, 5000);
+    dispatch(voteAnecdoteThunk(anec));
+    dispatch(setNotificationThunk(message, 5000));
   };
 
   return (

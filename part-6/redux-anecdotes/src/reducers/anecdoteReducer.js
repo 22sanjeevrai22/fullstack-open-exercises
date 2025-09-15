@@ -68,5 +68,12 @@ export const createAnecdoteThunk = (content) => {
   };
 };
 
+export const voteAnecdoteThunk = (anecdote) => {
+  return async (dispatch) => {
+    const editedAnecdote = await anecdoteService.updateAnecdote(anecdote);
+    dispatch(increaseVote(editedAnecdote.id));
+  };
+};
+
 export const { createAnecdote, increaseVote, setAnecdotes } =
   anecdoteSlice.actions;
