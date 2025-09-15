@@ -1,35 +1,58 @@
-const notesReducer = (
-  state = [
-    {
-      content: "the app state is in redux store",
-      important: true,
-      id: 1,
-    },
-    {
-      content: "state changes are made with actions",
-      important: false,
-      id: 2,
-    },
-  ],
-  action
-) => {
-  if (action.type === "NEW_NOTE") {
-    return [...state, action.payload];
-  } else if (action.type === "TOGGLE") {
-    const id = action.payload.id;
+import { createSlice, current } from "@reduxjs/toolkit";
+import noteService from "../src/services/noteService";
+const initialState = [
+  {
+    content: "the app state is in redux store",
+    important: true,
+    id: 1,
+  },
+  {
+    content: "state changes are made with actions",
+    important: false,
+    id: 2,
+  },
+];
 
-    let newNotes = state.map((note, index) => {
-      if (note.id !== id) {
-        return note;
-      } else {
-        return { ...note, important: !note.important };
-      }
-    });
+const generateId = () => Number((Math.random() * 1000000).toFixed(0));
 
-    return newNotes;
-  } else {
-    return state;
-  }
+const noteSlice = createSlice({
+  name: "notes",
+  initialState: [],
+  reducers: {
+    toggleImportanceOf(state, action) {
+      const id = action.payload;
+      const noteToChange = state.find((n) => n.id === id);
+      const changedNote = {
+        ...noteToChange,
+        important: !noteToChange.important,
+      };
+
+      console.log(current(state));
+
+      return state.map((note) => (note.id !== id ? note : changedNote));
+    },
+    appendNote(state, action) {
+      state.push(action.payload);
+    },
+    setNotes(state, action) {
+      return action.payload;
+    },
+  },
+});
+export const { toggleImportanceOf, appendNote, setNotes } = noteSlice.actions;
+
+export const initializeNotes = () => {
+  return async (dispatch) => {
+    const notes = await noteService.getAll();
+    dispatch(setNotes(notes));
+  };
 };
 
-export default notesReducer;
+export const createNote = (content) => {
+  return async (dispatch) => {
+    const newNote = await noteService.createNew(content);
+    dispatch(appendNote(newNote));
+  };
+};
+
+export default noteSlice.reducer;

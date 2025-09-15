@@ -1,0 +1,52 @@
+import { useSelector, useDispatch } from "react-redux";
+import { voteAnecdoteThunk } from "../reducers/anecdoteReducer";
+import { setNotificationThunk } from "../reducers/notificationReducer";
+
+const Anecdote = ({ anec, onClick }) => {
+  return (
+    <>
+      <div>
+        <div>{anec.content}</div>
+        <div>
+          has {anec.votes}
+          <button onClick={onClick}>vote</button>
+        </div>
+      </div>
+    </>
+  );
+};
+
+const Anecdotes = () => {
+  const dispatch = useDispatch(); // like setState
+  const anecdotes = useSelector((state) => state.anecdotes); //equivalent to state
+  console.log("anecc", anecdotes);
+  const searchInput = useSelector((state) => state.search);
+  const filteredAnecdotes = anecdotes.filter((anec) =>
+    anec.content.toLowerCase().includes(searchInput.toLowerCase())
+  );
+  const sortedAnecdotes = [...filteredAnecdotes].sort(
+    (a, b) => b.votes - a.votes
+  );
+
+  const handleVoteClick = (anec) => {
+    let message = `You voted '${anec.content}'`;
+    dispatch(voteAnecdoteThunk(anec));
+    dispatch(setNotificationThunk(message, 5000));
+  };
+
+  return (
+    <>
+      {sortedAnecdotes.map((anec) => (
+        <Anecdote
+          key={anec.id}
+          anec={anec}
+          onClick={() => {
+            handleVoteClick(anec);
+          }}
+        />
+      ))}
+    </>
+  );
+};
+
+export default Anecdotes;
