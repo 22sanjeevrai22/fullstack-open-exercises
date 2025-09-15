@@ -4,16 +4,12 @@ import Search from "./components/Search";
 import Notification from "./components/Notification";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { setAnecdotes } from "./reducers/anecdoteReducer";
-import anecdoteService from "./services/anecdoteService";
+import { initializeAnecdotesThunk } from "./reducers/anecdoteReducer";
 
 const App = () => {
   const dispatch = useDispatch();
   useEffect(() => {
-    anecdoteService.getAll().then((anecdotes) => {
-      console.log(anecdotes);
-      dispatch(setAnecdotes(anecdotes));
-    });
+    dispatch(initializeAnecdotesThunk());
   }, []);
 
   return (
