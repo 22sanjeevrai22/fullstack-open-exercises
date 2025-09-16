@@ -46,8 +46,12 @@ const App = () => {
     updateNoteMutation.mutate({ ...note, important: !note.important });
   };
 
-  if (result.isLoading) {
-    return <div>loading data...</div>;
+  if (result.status === "pending") {
+    return <span>Loading...</span>;
+  }
+
+  if (result.status === "error") {
+    return <span>Error: {result.error.message}</span>;
   }
 
   const notes = result.data;
@@ -62,7 +66,7 @@ const App = () => {
       {notes.map((note) => (
         <li key={note.id} onClick={() => toggleImportance(note)}>
           {note.content}
-          <strong> {note.important ? "important" : ""}</strong>
+          <strong> {note.important ? "important" : "not-important"}</strong>
         </li>
       ))}
     </div>
