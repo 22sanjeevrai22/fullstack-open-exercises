@@ -104,9 +104,21 @@ list.insertAtFront(900);
 list.insertAtFront(13);
 list.insertAtFront(30);
 list.deleteAtPosition(2);
-// list.insertAtPosition(111, 3);
+list.insertAtPosition(111, 1);
+list.insertAtPosition(55, 0);
+list.insertAtPosition(88, 7);
+list.insertAtPosition(77, 7);
 // list.deleteAtLast();
-console.log(list.printList() + "null"); // Output: 30 -> 20 -> 10 -> null
+
+const node4 = new Node(40, null);
+const node3 = new Node(30, node4);
+const node2 = new Node(20, node3);
+const node1 = new Node(10, node2);
+
+const list2 = new LinkedList();
+list.head = node1; // attach the manual chain to LinkedList
+
+console.log(list2.printList() + "null"); // Output: 30 -> 20 -> 10 -> null
 
 // function insertAtFront(head, value) {
 //   const newNode = new Node(value);

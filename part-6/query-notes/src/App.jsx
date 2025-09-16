@@ -42,6 +42,7 @@ const App = () => {
       queryClient.setQueryData(["notes"], newNotes);
     },
   });
+
   const toggleImportance = (note) => {
     updateNoteMutation.mutate({ ...note, important: !note.important });
   };

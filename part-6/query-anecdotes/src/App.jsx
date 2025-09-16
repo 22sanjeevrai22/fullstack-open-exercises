@@ -1,8 +1,18 @@
+import { useContext } from "react";
 import AnecdoteForm from "./components/AnecdoteForm";
 import Notification from "./components/Notification";
 import { getAllAnecdotes, updateAnecdote } from "./services/anectodeServices";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  QueryClientProvider,
+} from "@tanstack/react-query";
+import NotificationContext from "./context/notificationContext";
+
 const App = () => {
+  const [, setNotification] = useContext(NotificationContext);
+
   const queryClient = useQueryClient();
 
   //get
@@ -26,6 +36,9 @@ const App = () => {
         anec.id === updatedAnecdote.id ? updatedAnecdote : anec
       );
       queryClient.setQueryData(["anecdotes"], newAnecdotes);
+
+      //dispatching using useContext and useReducer
+      setNotification(`anecdote ${updateAnecdote.content} voted!`);
     },
   });
 
@@ -44,20 +57,21 @@ const App = () => {
 
   return (
     <div>
-      <h3>Anecdote app</h3>
+      <QueryClientProvider client={queryClient}>
+        <h3>Anecdote app</h3>
 
-      <Notification />
-      <AnecdoteForm />
-
-      {anecdotes.map((anecdote) => (
-        <div key={anecdote.id}>
-          <div>{anecdote.content}</div>
-          <div>
-            has {anecdote.votes}
-            <button onClick={() => handleVote(anecdote)}>vote</button>
+        <Notification />
+        <AnecdoteForm />
+        {anecdotes.map((anecdote) => (
+          <div key={anecdote.id}>
+            <div>{anecdote.content}</div>
+            <div>
+              has {anecdote.votes}
+              <button onClick={() => handleVote(anecdote)}>vote</button>
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </QueryClientProvider>
     </div>
   );
 };
