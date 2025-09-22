@@ -1,13 +1,12 @@
 import { useState } from "react";
 
 import {
-  Routes,
-  Route,
   Link,
   Navigate,
-  useParams,
-  useNavigate,
+  Route,
+  Routes,
   useMatch,
+  useNavigate,
 } from "react-router-dom";
 
 const Home = () => (
